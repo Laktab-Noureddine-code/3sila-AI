@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+transformers
+torch
+sentencepiece
+fastapi-users[sqlalchemy]
+sqlalchemy
+aiosqlite
+python-jose[cryptography]
+passlib[bcrypt]
