@@ -1,9 +1,10 @@
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.db import get_async_session
@@ -16,9 +17,21 @@ async def get_user_db(session: AsyncSession = Depends(get_async_session)):
     # session is an AsyncSession; User is the table class
     yield SQLAlchemyUserDatabase(session, User)
 
+
 class UserManager(UUIDIDMixin, BaseUserManager[User, UUID]):
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET
+
+    async def validate_create(self, user: User, user_create):
+        await super().validate_create(user, user_create)
+
+        statement = select(User).where(User.username == user_create.username)
+        result = await self.user_db.session.execute(statement)
+        if result.scalars().first() is not None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already taken",
+            )
 
 
 async def get_user_manager(user_db=Depends(get_user_db)):
