@@ -10,7 +10,8 @@ from app.core.database import get_session
 from app.models.user import User
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl="/auth/login"
+    tokenUrl="/auth/login",
+    auto_error=False
 )
 
 def get_current_user(
@@ -32,4 +33,23 @@ def get_current_user(
         raise HTTPException(status_code=404, detail="User not found")
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
+    return user
+
+def get_current_user_optional(
+    session: Session = Depends(get_session),
+    token: Optional[str] = Depends(reusable_oauth2)
+) -> Optional[User]:
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+        )
+        token_data = payload.get("sub")
+    except (JWTError, ValidationError):
+        return None
+        
+    user = session.get(User, int(token_data))
+    if not user or not user.is_active:
+        return None
     return user

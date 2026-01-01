@@ -59,3 +59,14 @@ def login(
         "access_token": access_token,
         "token_type": "bearer",
     }
+
+from app.core.deps import get_current_user
+
+@router.get("/me", response_model=UserRead)
+def read_users_me(
+    current_user: User = Depends(get_current_user)
+) -> Any:
+    """
+    Get current user.
+    """
+    return current_user
