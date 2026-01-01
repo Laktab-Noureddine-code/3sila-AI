@@ -66,8 +66,8 @@ from pydantic import BaseModel, EmailStr
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
-class ResetPasswordRequest(BaseModel):
-    token: str
+class ChangePasswordRequest(BaseModel):
+    old_password: str
     new_password: str
 
 class UpdateProfileRequest(BaseModel):
@@ -113,33 +113,26 @@ def forgot_password(
         "reset_token": reset_token  # Remove this in production!
     }
 
-@router.post("/reset-password")
-def reset_password(
-    request: ResetPasswordRequest,
+@router.post("/change-password")
+def change_password(
+    request: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ) -> Any:
     """
-    Reset password using token.
+    Change password for logged-in user.
+    Requires old password verification.
     """
-    from jose import jwt, JWTError
-    
-    try:
-        payload = jwt.decode(
-            request.token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+    # Verify old password
+    if not security.verify_password(request.old_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=400,
+            detail="Incorrect old password"
         )
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=400, detail="Invalid token")
-    except JWTError:
-        raise HTTPException(status_code=400, detail="Invalid or expired token")
     
-    user = session.get(User, int(user_id))
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    # Update password
-    user.hashed_password = security.get_password_hash(request.new_password)
-    session.add(user)
+    # Update to new password
+    current_user.hashed_password = security.get_password_hash(request.new_password)
+    session.add(current_user)
     session.commit()
     
     return {"message": "Password updated successfully"}
