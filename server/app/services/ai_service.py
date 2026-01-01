@@ -1,4 +1,5 @@
 import requests
+import time
 from app.core.config import settings
 
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
@@ -7,8 +8,6 @@ def call_gemini(prompt: str) -> str:
     api_key = settings.GEMINI_API_KEY
     if not api_key:
         return "Error: GEMINI_API_KEY not configured."
-
-    import time
     
     url = f"{GEMINI_API_URL}?key={api_key}"
     headers = {"Content-Type": "application/json"}
