@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import List, Any
 from sqlmodel import Session, select
 from app.core.deps import get_current_user
@@ -56,3 +56,59 @@ async def get_translations(
     ).order_by(History.created_at.desc())
     results = session.exec(statement).all()
     return paginate(results, page=page, per_page=per_page)
+
+@router.delete("/summaries/{summary_id}")
+async def delete_summary(
+    summary_id: int,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+) -> Any:
+    """
+    Delete a specific summary by ID.
+    User can only delete their own summaries.
+    """
+    history_item = session.get(History, summary_id)
+    
+    if not history_item:
+        raise HTTPException(status_code=404, detail="Summary not found")
+    
+    # Check ownership
+    if history_item.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this summary")
+    
+    # Check if it's actually a summary
+    if history_item.action_type != "summarize":
+        raise HTTPException(status_code=400, detail="This item is not a summary")
+    
+    session.delete(history_item)
+    session.commit()
+    
+    return {"message": "Summary deleted successfully"}
+
+@router.delete("/translations/{translation_id}")
+async def delete_translation(
+    translation_id: int,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+) -> Any:
+    """
+    Delete a specific translation by ID.
+    User can only delete their own translations.
+    """
+    history_item = session.get(History, translation_id)
+    
+    if not history_item:
+        raise HTTPException(status_code=404, detail="Translation not found")
+    
+    # Check ownership
+    if history_item.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this translation")
+    
+    # Check if it's actually a translation
+    if history_item.action_type != "translate":
+        raise HTTPException(status_code=400, detail="This item is not a translation")
+    
+    session.delete(history_item)
+    session.commit()
+    
+    return {"message": "Translation deleted successfully"}
