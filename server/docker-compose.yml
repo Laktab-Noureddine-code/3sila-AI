@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  api:
+    image: laktabnoureddine/3sila-ai:latest
+    container_name: 3sila-ai-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    volumes:
+      - api-data:/app
+    networks:
+      - 3sila-network
+
+volumes:
+  api-data:
+
+networks:
+  3sila-network:
+    driver: bridge
