@@ -2,19 +2,18 @@
   hosts: webservers
   become: yes
   vars:
-    # On garde ceci au cas où, mais ça ne bloquera pas si ça n'existe pas
     old_app_dir: /home/ubuntu/task-manager-deployment
     app_dir: /home/ubuntu/3sila-ai-deployment
 
   tasks:
     # ---------------------------------------------------------
-    # 1. NETTOYAGE (Ignoré si l'ancien projet n'existe pas)
+    # 1. NETTOYAGE
     # ---------------------------------------------------------
     - name: 1.1 Stop and remove old task-manager containers
       community.docker.docker_compose_v2:
         project_src: "{{ old_app_dir }}"
         state: absent
-      ignore_errors: yes # IMPORTANT : Ça continue même si ça échoue
+      ignore_errors: yes 
 
     - name: 1.2 Remove old deployment directory
       file:
@@ -23,25 +22,34 @@
       ignore_errors: yes
 
     # ---------------------------------------------------------
-    # 2. INSTALLATION (CRUCIAL POUR DOCKER COMPOSE V2)
+    # 2. INSTALLATION ROBUSTE (Via Script Officiel Docker)
     # ---------------------------------------------------------
-    - name: 2.1 Ensure Docker and Compose Plugin are installed
+    - name: 2.1 Update apt cache
       apt:
-        # AJOUT DE 'docker-compose-plugin' ICI : C'est la clé pour V2 !
-        name: ['docker.io', 'docker-compose-plugin'] 
-        state: latest
         update_cache: yes
 
-    - name: 2.2 Add ubuntu user to docker group
+    - name: 2.2 Install Curl (requis pour télécharger le script)
+      apt:
+        name: curl
+        state: present
+
+    - name: 2.3 Download Docker Official Install Script
+      get_url:
+        url: https://get.docker.com
+        dest: /tmp/get-docker.sh
+        mode: '0700'
+
+    - name: 2.4 Run Docker Install Script
+      command: sh /tmp/get-docker.sh
+      # Cette condition évite de le relancer si Docker est déjà bien installé
+      args:
+        creates: /usr/bin/docker-compose
+
+    - name: 2.5 Add ubuntu user to docker group
       user:
         name: ubuntu
         groups: docker
         append: yes
-
-    - name: 2.3 Restart Docker service
-      service:
-        name: docker
-        state: restarted
 
     # ---------------------------------------------------------
     # 3. PRÉPARATION DES FICHIERS
@@ -67,7 +75,6 @@
         owner: ubuntu
         mode: '0644'
       loop:
-        # CORRECTION : Les fichiers sont à côté du playbook, donc juste le nom suffit
         - { src: 'docker-compose.yml', dest: '{{ app_dir }}/docker-compose.yml' }
         - { src: '.env', dest: '{{ app_dir }}/server/.env' }
 
