@@ -7,12 +7,12 @@
 
   tasks:
     # ---------------------------------------------------------
-    # 1. NETTOYAGE (Optionnel mais propre)
+    # 1. NETTOYAGE
     # ---------------------------------------------------------
-    - name: 1.1 Stop and remove old task-manager containers
-      community.docker.docker_compose_v2:
-        project_src: "{{ old_app_dir }}"
-        state: absent
+    - name: 1.1 Stop and remove old task-manager containers (Shell Method)
+      shell: 
+        cmd: docker compose down || true
+        chdir: "{{ old_app_dir }}"
       ignore_errors: yes 
 
     - name: 1.2 Remove old deployment directory
@@ -22,12 +22,9 @@
       ignore_errors: yes
 
     # ---------------------------------------------------------
-    # 2. INSTALLATION (DÉJÀ FAITE MANUELLEMENT -> ON SAUTE)
+    # 2. CONFIGURATION UTILISATEUR
     # ---------------------------------------------------------
-    # J'ai retiré toute la section installation pour éviter les erreurs
-    # puisque vous l'avez fait à la main.
-    
-    - name: 2.1 Add ubuntu user to docker group (Securité)
+    - name: 2.1 Add ubuntu user to docker group
       user:
         name: ubuntu
         groups: docker
@@ -61,15 +58,13 @@
         - { src: '.env', dest: '{{ app_dir }}/server/.env' }
 
     # ---------------------------------------------------------
-    # 4. DÉPLOIEMENT
+    # 4. DÉPLOIEMENT (METHODE SHELL ROBUSTE)
     # ---------------------------------------------------------
-    - name: 4.1 Pull latest image from Docker Hub
-      community.docker.docker_image:
-        name: laktabnoureddine/3sila-ai:latest
-        source: pull
+    - name: 4.1 Pull latest image manually
+      shell: docker pull laktabnoureddine/3sila-ai:latest
 
+    # ICI ON UTILISE 'SHELL' AU LIEU DU MODULE POUR EVITER L'ERREUR JSON
     - name: 4.2 Start 3sila-AI application with Docker Compose
-      community.docker.docker_compose_v2:
-        project_src: "{{ app_dir }}"
-        state: present
-        pull: always
+      shell:
+        cmd: docker compose up -d --remove-orphans --force-recreate
+        chdir: "{{ app_dir }}"
