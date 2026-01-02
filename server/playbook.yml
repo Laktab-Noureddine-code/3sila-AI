@@ -22,13 +22,13 @@
       ignore_errors: yes
 
     # ---------------------------------------------------------
-    # 2. INSTALLATION ROBUSTE (Via Script Officiel Docker)
+    # 2. INSTALLATION (CORRIGÉE : ON FORCE TOUT)
     # ---------------------------------------------------------
     - name: 2.1 Update apt cache
       apt:
         update_cache: yes
 
-    - name: 2.2 Install Curl (requis pour télécharger le script)
+    - name: 2.2 Install Curl
       apt:
         name: curl
         state: present
@@ -41,11 +41,15 @@
 
     - name: 2.4 Run Docker Install Script
       command: sh /tmp/get-docker.sh
-      # Cette condition évite de le relancer si Docker est déjà bien installé
-      args:
-        creates: /usr/bin/docker-compose
+      # J'ai retiré la condition 'creates' : ON FORCE L'INSTALLATION MAINTENANT
 
-    - name: 2.5 Add ubuntu user to docker group
+    - name: 2.5 Force Install Docker Compose Plugin
+      apt:
+        name: docker-compose-plugin
+        state: latest
+        update_cache: yes
+
+    - name: 2.6 Add ubuntu user to docker group
       user:
         name: ubuntu
         groups: docker
