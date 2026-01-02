@@ -1,0 +1,75 @@
+---
+- name: Deploy 3sila-AI FastAPI Application to Oracle Cloud
+  hosts: webservers
+  become: yes
+  vars:
+    old_app_dir: /home/ubuntu/task-manager-deployment
+    app_dir: /home/ubuntu/3sila-ai-deployment
+
+  tasks:
+    # Remove old application
+    - name: 1.1 Stop and remove old task-manager containers
+      community.docker.docker_compose:
+        project_src: "{{ old_app_dir }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: 1.2 Remove old deployment directory
+      file:
+        path: "{{ old_app_dir }}"
+        state: absent
+
+    # Install Docker (if not installed)
+    - name: 2.1 Ensure Docker is installed
+      apt:
+        name: ['docker.io', 'docker-compose']
+        state: latest
+        update_cache: yes
+
+    - name: 2.2 Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: 2.3 Restart Docker service
+      service:
+        name: docker
+        state: restarted
+
+    # Deploy new application
+    - name: 3.1 Create deployment directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: ubuntu
+        mode: '0755'
+
+    - name: 3.2 Create server subdirectory for .env
+      file:
+        path: "{{ app_dir }}/server"
+        state: directory
+        owner: ubuntu
+        mode: '0755'
+
+    - name: 3.3 Copy docker-compose.yml and .env
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: ubuntu
+        mode: '0644'
+      loop:
+        - { src: './docker-compose.yml', dest: '{{ app_dir }}/docker-compose.yml' }
+        - { src: './server/.env', dest: '{{ app_dir }}/server/.env' }
+
+    - name: 4.1 Pull latest image from Docker Hub
+      community.docker.docker_image:
+        name: laktabnoureddine/3sila-ai:latest
+        source: pull
+
+    - name: 4.2 Start 3sila-AI application with Docker Compose
+      community.docker.docker_compose:
+        project_src: "{{ app_dir }}"
+        state: present
+      environment:
+        DOCKER_HOST: unix:///var/run/docker.sock
