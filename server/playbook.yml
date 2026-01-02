@@ -7,7 +7,7 @@
 
   tasks:
     # ---------------------------------------------------------
-    # 1. NETTOYAGE
+    # 1. NETTOYAGE (Optionnel mais propre)
     # ---------------------------------------------------------
     - name: 1.1 Stop and remove old task-manager containers
       community.docker.docker_compose_v2:
@@ -22,42 +22,12 @@
       ignore_errors: yes
 
     # ---------------------------------------------------------
-    # 2. INSTALLATION (NETTOYAGE + NOUVELLE INSTALLATION)
+    # 2. INSTALLATION (DÉJÀ FAITE MANUELLEMENT -> ON SAUTE)
     # ---------------------------------------------------------
+    # J'ai retiré toute la section installation pour éviter les erreurs
+    # puisque vous l'avez fait à la main.
     
-    # NOUVEAU : On supprime l'ancien Docker qui cause le conflit
-    - name: 2.0 Remove conflicting legacy packages
-      apt:
-        name: ['docker.io', 'docker-doc', 'docker-compose', 'podman-docker', 'containerd', 'runc']
-        state: absent
-
-    - name: 2.1 Update apt cache
-      apt:
-        update_cache: yes
-        # On force la mise à jour des miroirs
-        cache_valid_time: 0 
-
-    - name: 2.2 Install Curl
-      apt:
-        name: curl
-        state: present
-
-    - name: 2.3 Download Docker Official Install Script
-      get_url:
-        url: https://get.docker.com
-        dest: /tmp/get-docker.sh
-        mode: '0700'
-
-    - name: 2.4 Run Docker Install Script
-      command: sh /tmp/get-docker.sh
-
-    # On s'assure que le plugin est là (même si le script le fait)
-    - name: 2.5 Ensure Docker Compose Plugin is installed
-      apt:
-        name: docker-compose-plugin
-        state: latest
-
-    - name: 2.6 Add ubuntu user to docker group
+    - name: 2.1 Add ubuntu user to docker group (Securité)
       user:
         name: ubuntu
         groups: docker
