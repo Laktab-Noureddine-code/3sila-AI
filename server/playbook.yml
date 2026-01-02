@@ -1,28 +1,34 @@
----
 - name: Deploy 3sila-AI FastAPI Application to Oracle Cloud
   hosts: webservers
   become: yes
   vars:
+    # On garde ceci au cas où, mais ça ne bloquera pas si ça n'existe pas
     old_app_dir: /home/ubuntu/task-manager-deployment
     app_dir: /home/ubuntu/3sila-ai-deployment
 
   tasks:
-    # Remove old application
+    # ---------------------------------------------------------
+    # 1. NETTOYAGE (Ignoré si l'ancien projet n'existe pas)
+    # ---------------------------------------------------------
     - name: 1.1 Stop and remove old task-manager containers
       community.docker.docker_compose_v2:
         project_src: "{{ old_app_dir }}"
         state: absent
-      ignore_errors: yes
+      ignore_errors: yes # IMPORTANT : Ça continue même si ça échoue
 
     - name: 1.2 Remove old deployment directory
       file:
         path: "{{ old_app_dir }}"
         state: absent
+      ignore_errors: yes
 
-    # Install Docker (if not installed)
-    - name: 2.1 Ensure Docker is installed
+    # ---------------------------------------------------------
+    # 2. INSTALLATION (CRUCIAL POUR DOCKER COMPOSE V2)
+    # ---------------------------------------------------------
+    - name: 2.1 Ensure Docker and Compose Plugin are installed
       apt:
-        name: ['docker.io', 'docker-compose']
+        # AJOUT DE 'docker-compose-plugin' ICI : C'est la clé pour V2 !
+        name: ['docker.io', 'docker-compose-plugin'] 
         state: latest
         update_cache: yes
 
@@ -37,7 +43,9 @@
         name: docker
         state: restarted
 
-    # Deploy new application
+    # ---------------------------------------------------------
+    # 3. PRÉPARATION DES FICHIERS
+    # ---------------------------------------------------------
     - name: 3.1 Create deployment directory
       file:
         path: "{{ app_dir }}"
@@ -59,9 +67,13 @@
         owner: ubuntu
         mode: '0644'
       loop:
-        - { src: './docker-compose.yml', dest: '{{ app_dir }}/docker-compose.yml' }
-        - { src: './server/.env', dest: '{{ app_dir }}/server/.env' }
+        # CORRECTION : Les fichiers sont à côté du playbook, donc juste le nom suffit
+        - { src: 'docker-compose.yml', dest: '{{ app_dir }}/docker-compose.yml' }
+        - { src: '.env', dest: '{{ app_dir }}/server/.env' }
 
+    # ---------------------------------------------------------
+    # 4. DÉPLOIEMENT
+    # ---------------------------------------------------------
     - name: 4.1 Pull latest image from Docker Hub
       community.docker.docker_image:
         name: laktabnoureddine/3sila-ai:latest
@@ -71,5 +83,4 @@
       community.docker.docker_compose_v2:
         project_src: "{{ app_dir }}"
         state: present
-      environment:
-        DOCKER_HOST: unix:///var/run/docker.sock
+        pull: always
