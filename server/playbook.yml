@@ -22,11 +22,20 @@
       ignore_errors: yes
 
     # ---------------------------------------------------------
-    # 2. INSTALLATION (CORRIGÉE : ON FORCE TOUT)
+    # 2. INSTALLATION (NETTOYAGE + NOUVELLE INSTALLATION)
     # ---------------------------------------------------------
+    
+    # NOUVEAU : On supprime l'ancien Docker qui cause le conflit
+    - name: 2.0 Remove conflicting legacy packages
+      apt:
+        name: ['docker.io', 'docker-doc', 'docker-compose', 'podman-docker', 'containerd', 'runc']
+        state: absent
+
     - name: 2.1 Update apt cache
       apt:
         update_cache: yes
+        # On force la mise à jour des miroirs
+        cache_valid_time: 0 
 
     - name: 2.2 Install Curl
       apt:
@@ -41,13 +50,12 @@
 
     - name: 2.4 Run Docker Install Script
       command: sh /tmp/get-docker.sh
-      # J'ai retiré la condition 'creates' : ON FORCE L'INSTALLATION MAINTENANT
 
-    - name: 2.5 Force Install Docker Compose Plugin
+    # On s'assure que le plugin est là (même si le script le fait)
+    - name: 2.5 Ensure Docker Compose Plugin is installed
       apt:
         name: docker-compose-plugin
         state: latest
-        update_cache: yes
 
     - name: 2.6 Add ubuntu user to docker group
       user:
