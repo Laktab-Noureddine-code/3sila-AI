@@ -9,7 +9,7 @@
     # ---------------------------------------------------------
     # 1. NETTOYAGE
     # ---------------------------------------------------------
-    - name: 1.1 Stop and remove old task-manager containers (Shell Method)
+    - name: 1.1 Stop and remove old task-manager containers
       shell: 
         cmd: docker compose down || true
         chdir: "{{ old_app_dir }}"
@@ -40,7 +40,8 @@
         owner: ubuntu
         mode: '0755'
 
-    - name: 3.2 Create server subdirectory for .env
+    # (La tâche 3.2 pour créer le dossier server n'est plus utile, mais on la laisse, ça ne gêne pas)
+    - name: 3.2 Create server subdirectory
       file:
         path: "{{ app_dir }}/server"
         state: directory
@@ -55,16 +56,17 @@
         mode: '0644'
       loop:
         - { src: 'docker-compose.yml', dest: '{{ app_dir }}/docker-compose.yml' }
-        - { src: '.env', dest: '{{ app_dir }}/server/.env' }
+        # CORRECTION ICI : On met le .env à la racine (on retire 'server/')
+        - { src: '.env', dest: '{{ app_dir }}/.env' }
 
     # ---------------------------------------------------------
-    # 4. DÉPLOIEMENT (METHODE SHELL ROBUSTE)
+    # 4. DÉPLOIEMENT
     # ---------------------------------------------------------
     - name: 4.1 Pull latest image manually
       shell: docker pull laktabnoureddine/3sila-ai:latest
 
-    # ICI ON UTILISE 'SHELL' AU LIEU DU MODULE POUR EVITER L'ERREUR JSON
     - name: 4.2 Start 3sila-AI application with Docker Compose
       shell:
-        cmd: docker compose up -d --remove-orphans --force-recreate
+        # On force la lecture du fichier .env s'il ne le trouve pas automatiquement
+        cmd: docker compose --env-file .env up -d --remove-orphans --force-recreate
         chdir: "{{ app_dir }}"
