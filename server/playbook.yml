@@ -9,7 +9,7 @@
   tasks:
     # Remove old application
     - name: 1.1 Stop and remove old task-manager containers
-      community.docker.docker_compose:
+      community.docker.docker_compose_v2:
         project_src: "{{ old_app_dir }}"
         state: absent
       ignore_errors: yes
@@ -68,7 +68,7 @@
         source: pull
 
     - name: 4.2 Start 3sila-AI application with Docker Compose
-      community.docker.docker_compose:
+      community.docker.docker_compose_v2:
         project_src: "{{ app_dir }}"
         state: present
       environment:
