@@ -10,6 +10,8 @@ from app.core.config import settings
 # Import models to ensure they are registered with SQLModel.metadata
 from app.models.user import User
 from app.models.history import History
+from app.models.password_reset import PasswordReset
+from app.models.system_config import SystemConfig
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
@@ -22,7 +24,7 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
 
-app = FastAPI(title="3sila-AI API", lifespan=lifespan)
+app = FastAPI(title="3ssila-AI API", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -36,7 +38,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.routers import auth, tools, history
+from app.routers import auth, tools, history, admin
 app.include_router(auth.router)
 app.include_router(tools.router)
 app.include_router(history.router)
+app.include_router(admin.router)

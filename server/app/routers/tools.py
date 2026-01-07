@@ -14,7 +14,7 @@ router = APIRouter(prefix="/tools", tags=["tools"])
 limiter = Limiter(key_func=get_remote_address)
 
 # Input validation helper
-def validate_text_input(text: str, max_length: int = 2000) -> str:
+def validate_text_input(text: str, max_length: int = 4000) -> str:
     if not text or not text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
     if len(text) > max_length:
@@ -40,11 +40,11 @@ async def summarize_endpoint(
     """
     Summarize text.
     - Guest: Max 250 chars, no history.
-    - User: Max 2000 chars, saves history.
+    - User: Max 4000 chars, saves history.
     """
     # 1. Tier System Logic
     if current_user:
-        limit = 2000
+        limit = 4000
     else:
         limit = 250
     
@@ -82,11 +82,11 @@ async def translate_endpoint(
     """
     Translate text.
     - Guest: Max 250 chars, no history.
-    - User: Max 2000 chars, saves history.
+    - User: Max 4000 chars, saves history.
     """
     # 1. Tier System Logic
     if current_user:
-        limit = 2000
+        limit = 4000
     else:
         limit = 250
     

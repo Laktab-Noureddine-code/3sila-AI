@@ -3,8 +3,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from app.core import security
+from app.core.config import settings
 from app.core.database import get_session, engine
 from app.models.user import User, UserRead
+from app.models.password_reset import PasswordReset
+import random
+from datetime import datetime
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -51,7 +56,7 @@ def login(
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     
-    access_token_expires = security.timedelta(minutes=60)
+    access_token_expires = security.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         user.id, expires_delta=access_token_expires
     )
@@ -62,6 +67,15 @@ def login(
 
 from app.core.deps import get_current_user
 from pydantic import BaseModel, EmailStr
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+class PasswordResetConfirm(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str
+
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
@@ -82,36 +96,91 @@ def read_users_me(
     """
     return current_user
 
-@router.post("/forgot-password")
-def forgot_password(
-    request: ForgotPasswordRequest,
+@router.post("/send-reset-code")
+def send_reset_code(
+    request: PasswordResetRequest,
     session: Session = Depends(get_session)
 ) -> Any:
     """
-    Request password reset token.
-    In production: Send email with reset link.
-    For now: Return token in response.
+    Generate and send a 6-digit password reset code.
+    MOCK: Currently prints code to console instead of sending email.
     """
     user = session.exec(
         select(User).where(User.email == request.email)
     ).first()
     
     if not user:
-        # Don't reveal if email exists (security best practice)
-        return {"message": "If the email exists, a reset link has been sent"}
+        # Security: Don't reveal if user exists
+        return {"message": "If the email is registered, a reset code has been sent."}
     
-    # Generate reset token (expires in 15 minutes)
-    reset_token_expires = security.timedelta(minutes=15)
-    reset_token = security.create_access_token(
-        user.id, expires_delta=reset_token_expires
+    # Generate 6-digit code
+    code = "".join([str(random.randint(0, 9)) for _ in range(6)])
+    expires_at = datetime.utcnow() + security.timedelta(minutes=15)
+    
+    # Save to database
+    reset_entry = PasswordReset(
+        email=request.email,
+        code=code,
+        expires_at=expires_at
     )
+    session.add(reset_entry)
+    session.commit()
     
-    # In production: Send email here
-    # For now, return token for testing
-    return {
-        "message": "Password reset token generated",
-        "reset_token": reset_token  # Remove this in production!
-    }
+    # MOCK EMAIL SENDING
+    print(f"============================================")
+    print(f"EMAIL TO: {request.email}")
+    print(f"SUBJECT: Password Reset Code")
+    print(f"BODY: Your verification code is: {code}")
+    print(f"============================================")
+    
+    # TODO: Integrate real SMTP sending here
+    # send_email(to=request.email, subject="Reset Code", body=f"Code: {code}")
+    
+    return {"message": "If the email is registered, a reset code has been sent."}
+
+
+@router.post("/reset-password-with-code")
+def reset_password_with_code(
+    request: PasswordResetConfirm,
+    session: Session = Depends(get_session)
+) -> Any:
+    """
+    Reset password using the 6-digit verification code.
+    """
+    # 1. Verify code
+    reset_entry = session.exec(
+        select(PasswordReset)
+        .where(PasswordReset.email == request.email)
+        .where(PasswordReset.code == request.code)
+        .where(PasswordReset.expires_at > datetime.utcnow())
+        .order_by(PasswordReset.created_at.desc())
+    ).first()
+    
+    if not reset_entry:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired verification code"
+        )
+    
+    # 2. Get User
+    user = session.exec(
+        select(User).where(User.email == request.email)
+    ).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # 3. Update Password
+    user.hashed_password = security.get_password_hash(request.new_password)
+    session.add(user)
+    
+    # 4. Optional: Delete used code (or all codes for this user)
+    session.delete(reset_entry)
+    
+    session.commit()
+    
+    return {"message": "Password updated successfully"}
+
 
 @router.post("/change-password")
 def change_password(
