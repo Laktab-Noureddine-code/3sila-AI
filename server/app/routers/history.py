@@ -57,6 +57,46 @@ async def get_translations(
     results = session.exec(statement).all()
     return paginate(results, page=page, per_page=per_page)
 
+@router.delete("/summaries/all")
+async def delete_all_summaries(
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+) -> Any:
+    """
+    Delete ALL summaries for the logged-in user.
+    """
+    statement = select(History).where(
+        History.user_id == current_user.id,
+        History.action_type == "summarize"
+    )
+    results = session.exec(statement).all()
+    
+    for item in results:
+        session.delete(item)
+        
+    session.commit()
+    return {"message": "All summaries deleted successfully"}
+
+@router.delete("/translations/all")
+async def delete_all_translations(
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+) -> Any:
+    """
+    Delete ALL translations for the logged-in user.
+    """
+    statement = select(History).where(
+        History.user_id == current_user.id,
+        History.action_type == "translate"
+    )
+    results = session.exec(statement).all()
+    
+    for item in results:
+        session.delete(item)
+        
+    session.commit()
+    return {"message": "All translations deleted successfully"}
+
 @router.delete("/summaries/{summary_id}")
 async def delete_summary(
     summary_id: int,
