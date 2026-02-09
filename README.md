@@ -56,11 +56,13 @@ pip install -r requirements.txt
 
 ## ▶️ Running the Project
 
-## Start the FastAPI server:
+### Start the FastAPI server:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-## The API will be available at:
+### The API will be available at:
+```bash
 http://127.0.0.1:8000
+```
