@@ -1,0 +1,31 @@
+{
+  "name": "my-vue-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.23",
+    "@tailwindcss/vite": "^4.1.18",
+    "axios": "^1.13.2",
+    "docx": "^9.5.1",
+    "flag-icons": "^7.5.0",
+    "jspdf": "^4.0.0",
+    "microsoft-cognitiveservices-speech-sdk": "^1.47.0",
+    "vue": "^3.5.24",
+    "vue-country-flag-next": "^2.3.2",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/tsconfig": "^0.8.1",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.2",
+    "vue-tsc": "^3.1.3"
+  }
+}
