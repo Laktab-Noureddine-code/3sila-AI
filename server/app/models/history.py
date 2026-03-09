@@ -10,4 +10,7 @@ class History(SQLModel, table=True):
     summary_text: Optional[str] = None
     translated_text: Optional[str] = None
     target_lang: Optional[str] = None
+    source_type: str = Field(default="text")
+    source_url: Optional[str] = None
+    is_favorite: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)

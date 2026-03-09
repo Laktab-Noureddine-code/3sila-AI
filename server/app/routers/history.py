@@ -152,3 +152,43 @@ async def delete_translation(
     session.commit()
     
     return {"message": "Translation deleted successfully"}
+@router.get("/favorites", response_model=PaginatedResponse[History])
+async def get_favorites(
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+    page: int = Query(1, ge=1, description="Page number"),
+    per_page: int = Query(20, ge=1, le=100, description="Items per page")
+) -> Any:
+    """
+    Get all favorited items (translations and summaries) for the logged-in user.
+    """
+    statement = select(History).where(
+        History.user_id == current_user.id,
+        History.is_favorite == True
+    ).order_by(History.created_at.desc())
+    results = session.exec(statement).all()
+    return paginate(results, page=page, per_page=per_page)
+
+@router.patch("/{item_id}/favorite", response_model=History)
+async def toggle_favorite(
+    item_id: int,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+) -> Any:
+    """
+    Toggle the favorite status of a specific history item.
+    """
+    history_item = session.get(History, item_id)
+
+    if not history_item:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    if history_item.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to modify this item")
+        
+    history_item.is_favorite = not history_item.is_favorite
+    session.add(history_item)
+    session.commit()
+    session.refresh(history_item)
+    
+    return history_item

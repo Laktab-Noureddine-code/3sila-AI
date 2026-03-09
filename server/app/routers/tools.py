@@ -24,10 +24,14 @@ def validate_text_input(text: str, max_length: int = 4000) -> str:
 
 class TextRequest(BaseModel):
     text: str
+    source_type: str = "text"
+    source_url: Optional[str] = None
 
 class TranslationRequest(BaseModel):
     text: str
     target_lang: str = "French"
+    source_type: str = "text"
+    source_url: Optional[str] = None
 
 @router.post("/summarize")
 @limiter.limit("10/minute")  # Guest limit
@@ -64,7 +68,9 @@ async def summarize_endpoint(
             original_text=data.text,
             summary_text=summary,
             translated_text="", # Not performing translation here
-            action_type="summarize"
+            action_type="summarize",
+            source_type=data.source_type,
+            source_url=data.source_url
         )
         session.add(history_entry)
         session.commit()
@@ -107,7 +113,9 @@ async def translate_endpoint(
             summary_text="", # Not performing summary here
             translated_text=translation,
             target_lang=data.target_lang,
-            action_type="translate"
+            action_type="translate",
+            source_type=data.source_type,
+            source_url=data.source_url
         )
         session.add(history_entry)
         session.commit()
