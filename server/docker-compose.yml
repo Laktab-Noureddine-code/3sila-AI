@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   api:
-    image: laktabnoureddine/3sila-ai:latest
+    build: .
     container_name: 3sila-ai-api
     ports:
       - "8000:8000"
@@ -10,12 +10,9 @@ services:
       - ./.env
     restart: unless-stopped
     volumes:
-      - api-data:/app
+      - ./data:/app/data
     networks:
       - 3sila-network
-
-volumes:
-  api-data:
 
 networks:
   3sila-network:
