@@ -51,3 +51,108 @@
   direction: rtl !important;
   font-family: "Cairo", "Roboto", sans-serif;
 }
+
+/* TipTap content rendering styles (used globally by History, Favorites, etc.) */
+.tiptap-content h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  margin-top: 1rem;
+}
+.tiptap-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+}
+.tiptap-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+}
+.tiptap-content p {
+  margin-bottom: 0.5rem;
+}
+.tiptap-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.tiptap-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.tiptap-content li {
+  margin-bottom: 0.25rem;
+}
+.tiptap-content blockquote {
+  border-left: 4px solid #22d3ee;
+  padding-left: 1rem;
+  font-style: italic;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.tiptap-content hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.tiptap-content strong {
+  font-weight: 700;
+}
+.tiptap-content em {
+  font-style: italic;
+}
+.tiptap-content s {
+  text-decoration: line-through;
+}
+.tiptap-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+.tiptap-content table th,
+.tiptap-content table td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+}
+.dark .tiptap-content table th,
+.dark .tiptap-content table td {
+  border-color: #4b5563;
+}
+.tiptap-content table th {
+  font-weight: 600;
+  text-align: left;
+  background: #f3f4f6;
+}
+.dark .tiptap-content table th {
+  background: #1f2937;
+}
+.tiptap-content code {
+  background: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: monospace;
+}
+.dark .tiptap-content code {
+  background: #1f2937;
+}
+.tiptap-content pre {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  overflow-x: auto;
+}
+.dark .tiptap-content pre {
+  background: #1f2937;
+}
+.tiptap-content pre code {
+  background: transparent;
+  padding: 0;
+}

@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { favorites, type FavoriteItem } from "../stores/favorites";
-import { auth } from "../stores/auth";
 import { toast } from "../stores/toast";
 import { confirm } from "../stores/confirm";
 import { useI18n } from "../composables/useI18n";
@@ -167,7 +166,10 @@ const deleteSelected = async () => {
 };
 
 const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text);
+  // Strip HTML tags for plain text copy
+  const tmp = document.createElement("div");
+  tmp.innerHTML = text;
+  navigator.clipboard.writeText(tmp.textContent || text);
   toast.success("Copied to clipboard!");
 };
 
@@ -420,14 +422,13 @@ onMounted(() => {
                         >{{ t.favorites.input }}</span
                       >
                     </div>
-                    <p
+                    <div
                       :class="[
-                        'text-sm text-gray-700 dark:text-gray-300',
+                        'text-sm text-gray-700 dark:text-gray-300 tiptap-content',
                         isExpanded(item.id) ? '' : 'line-clamp-3',
                       ]"
-                    >
-                      {{ item.inputText }}
-                    </p>
+                      v-html="item.inputText"
+                    ></div>
                   </div>
 
                   <!-- Result Panel -->
@@ -443,14 +444,13 @@ onMounted(() => {
                         >{{ t.favorites.result }}</span
                       >
                     </div>
-                    <p
+                    <div
                       :class="[
-                        'text-sm text-gray-800 dark:text-gray-200',
+                        'text-sm text-gray-800 dark:text-gray-200 tiptap-content',
                         isExpanded(item.id) ? '' : 'line-clamp-3',
                       ]"
-                    >
-                      {{ item.resultText }}
-                    </p>
+                      v-html="item.resultText"
+                    ></div>
                   </div>
                 </div>
 
