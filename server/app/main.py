@@ -38,6 +38,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/hello")
+def hello_world():
+    return {"message": "Hello World! The pipeline worked!"}
+
 from app.routers import auth, tools, history, admin
 app.include_router(auth.router)
 app.include_router(tools.router)
