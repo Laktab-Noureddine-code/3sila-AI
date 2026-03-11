@@ -3,7 +3,7 @@ name: Deploy to Oracle Cloud
 on:
   push:
     branches:
-      - main # Runs the pipeline when you push to the 'main' branch. Change if your default branch is different.
+      - main # Make sure your default branch matches this name (e.g., main or master)
 
 jobs:
   deploy:
@@ -17,9 +17,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          # The script below runs directly on your Oracle Server
           script: |
-            # 1. Navigate to the project directory (Change this to your actual project path on the server)
+            # 1. Navigate to the project directory
             cd /home/${{ secrets.SERVER_USERNAME }}/3sila-AI
             
             # 2. Pull the latest code from GitHub
@@ -31,5 +30,5 @@ jobs:
             docker compose down
             docker compose up -d --build
             
-            # 4. Clean up old unused docker images to prevent running out of Oracle's disk space
+            # 4. Clean up old unused docker images to prevent running out of disk space
             docker image prune -f
