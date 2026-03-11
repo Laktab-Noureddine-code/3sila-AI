@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
+import { ArrowLeft, ArrowRight } from "lucide-vue-next";
 </script>
 
 <template>
@@ -651,19 +652,7 @@ import { RouterLink } from "vue-router";
               to="/"
               class="inline-flex items-center gap-2 text-cyan-600 dark:text-cyan-400 hover:underline font-medium"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
+              <ArrowLeft class="w-4 h-4" />
               Back to Home
             </RouterLink>
             <span class="text-gray-300 dark:text-gray-600 hidden sm:inline"
@@ -674,19 +663,7 @@ import { RouterLink } from "vue-router";
               class="inline-flex items-center gap-2 text-cyan-600 dark:text-cyan-400 hover:underline font-medium"
             >
               Privacy Policy
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-              </svg>
+              <ArrowRight class="w-4 h-4" />
             </RouterLink>
           </div>
         </div>

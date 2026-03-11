@@ -8,6 +8,17 @@ import { confirm } from "../stores/confirm";
 import { favorites } from "../stores/favorites";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import { useI18n } from "../composables/useI18n";
+import {
+  FolderPlus,
+  Languages,
+  Pencil,
+  CheckCircle,
+  ChevronDown,
+  RefreshCw,
+  Copy,
+  Star,
+  Trash2,
+} from "lucide-vue-next";
 
 const { t } = useI18n();
 
@@ -38,7 +49,7 @@ const displayedHistory = computed(() => {
       isSelected: selectedItems.value.has(item.id),
       type: isTranslation ? "translation" : isSummary ? "summary" : item.type,
       displayDate: new Date(
-        item.created_at || item.timestamp
+        item.created_at || item.timestamp,
       ).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -51,8 +62,8 @@ const displayedHistory = computed(() => {
       result: isTranslation
         ? item.translated_text
         : isSummary
-        ? item.summary_text
-        : item.result,
+          ? item.summary_text
+          : item.result,
     };
   });
 });
@@ -61,7 +72,7 @@ const selectedCount = computed(() => selectedItems.value.size);
 const allSelected = computed(
   () =>
     displayedHistory.value.length > 0 &&
-    displayedHistory.value.length === selectedCount.value
+    displayedHistory.value.length === selectedCount.value,
 );
 
 // --- Methods ---
@@ -79,13 +90,13 @@ const fetchHistory = async () => {
       case "summaries":
         response = await api.getHistorySummaries(
           currentPage.value,
-          perPage.value
+          perPage.value,
         );
         break;
       case "translations":
         response = await api.getHistoryTranslations(
           currentPage.value,
-          perPage.value
+          perPage.value,
         );
         break;
       default:
@@ -205,7 +216,7 @@ const deleteSelected = async () => {
         const item = history.value.find((h) => h.id === id);
         const isSummary = item?.action_type === "summarize";
         return isSummary ? api.deleteSummary(id) : api.deleteTranslation(id);
-      })
+      }),
     );
     selectedItems.value.clear();
     await fetchHistory();
@@ -404,19 +415,9 @@ onMounted(() => {
 
           <!-- Empty State -->
           <div v-else-if="history.length === 0" class="text-center py-12">
-            <svg
+            <FolderPlus
               class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-              />
-            </svg>
+            />
             <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">
               {{ t.history.empty }}
             </h3>
@@ -488,19 +489,7 @@ onMounted(() => {
                     v-if="item.target_language || item.target_lang"
                     class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-300"
                   >
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-                      />
-                    </svg>
+                    <Languages class="w-3 h-3" />
                     {{ item.target_language || item.target_lang }}
                   </span>
                   <span
@@ -517,19 +506,9 @@ onMounted(() => {
                     class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3"
                   >
                     <div class="flex items-center gap-2 mb-2">
-                      <svg
+                      <Pencil
                         class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
+                      />
                       <span
                         class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                         >{{ t.history.input }}</span
@@ -553,19 +532,9 @@ onMounted(() => {
                     class="bg-cyan-50 dark:bg-cyan-950/30 rounded-lg p-3 border border-cyan-200 dark:border-cyan-800"
                   >
                     <div class="flex items-center gap-2 mb-2">
-                      <svg
+                      <CheckCircle
                         class="w-4 h-4 text-cyan-600 dark:text-cyan-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                      />
                       <span
                         class="text-xs font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wide"
                         >{{ t.history.result }}</span
@@ -589,22 +558,12 @@ onMounted(() => {
                   @click="toggleExpand(item.id)"
                   class="mt-2 flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer"
                 >
-                  <svg
+                  <ChevronDown
                     :class="[
                       'w-4 h-4 transition-transform',
                       isExpanded(item.id) ? 'rotate-180' : '',
                     ]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  />
                   {{
                     isExpanded(item.id)
                       ? t.history.showLess
@@ -621,19 +580,7 @@ onMounted(() => {
                   class="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-cyan-900/50 transition-colors cursor-pointer"
                   :title="t.history.useInTranslator"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
+                  <RefreshCw class="w-5 h-5" />
                 </button>
 
                 <!-- Copy Result -->
@@ -643,25 +590,13 @@ onMounted(() => {
                       item.result ||
                         item.output_text ||
                         item.translated_text ||
-                        ''
+                        '',
                     )
                   "
                   class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer"
                   :title="t.history.copyResult"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
+                  <Copy class="w-5 h-5" />
                 </button>
 
                 <!-- Save to Favorites -->
@@ -679,19 +614,10 @@ onMounted(() => {
                       : t.history.saveToFavorites
                   "
                 >
-                  <svg
+                  <Star
                     class="w-5 h-5"
                     :fill="isItemFavorited(item) ? 'currentColor' : 'none'"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                    />
-                  </svg>
+                  />
                 </button>
 
                 <!-- Delete -->
@@ -701,19 +627,7 @@ onMounted(() => {
                   class="p-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50 cursor-pointer"
                   :title="t.history.delete"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <Trash2 class="w-5 h-5" />
                 </button>
               </div>
             </div>

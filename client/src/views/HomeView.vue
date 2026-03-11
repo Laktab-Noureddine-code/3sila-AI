@@ -16,6 +16,22 @@ import { exportResult, type ExportFormat } from "../services/export";
 import type { SpeechRecognizer } from "microsoft-cognitiveservices-speech-sdk";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import BottomSheet from "../components/BottomSheet.vue";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  CloudUpload,
+  Loader2,
+  Mic,
+  Paperclip,
+  Trash2,
+  Star,
+  Volume2,
+  Square,
+  Copy,
+  Download,
+  FileText,
+} from "lucide-vue-next";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -562,7 +578,7 @@ const toggleMicrophone = async (languageName?: string) => {
     console.error("Microphone permission error:", error);
     if (error.name === "NotAllowedError") {
       toast.error(
-        "Microphone access denied. Please allow microphone permissions."
+        "Microphone access denied. Please allow microphone permissions.",
       );
     } else if (error.name === "NotFoundError") {
       toast.error("No microphone found. Please connect a microphone.");
@@ -695,7 +711,7 @@ const handleExport = async (format: ExportFormat) => {
   } catch (error: any) {
     console.error("Export error:", error);
     toast.error(
-      `Failed to export as ${format.toUpperCase()}: ${error.message}`
+      `Failed to export as ${format.toUpperCase()}: ${error.message}`,
     );
   } finally {
     isExporting.value = false;
@@ -743,35 +759,15 @@ const handleExport = async (format: ExportFormat) => {
               class="absolute inset-0 rounded-full pointer-events-none sm:hidden flex items-center justify-between px-2 overflow-hidden"
               :style="{ opacity: swipeIndicatorOpacity }"
             >
-              <svg
+              <ChevronLeft
                 v-if="swipeDirection === 'right' && mode === 'summarize'"
                 class="w-4 h-4 text-cyan-500 animate-pulse"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
+              />
               <div class="flex-1"></div>
-              <svg
+              <ChevronRight
                 v-if="swipeDirection === 'left' && mode === 'translate'"
                 class="w-4 h-4 text-cyan-500 animate-pulse"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              />
             </div>
             <button
               @click="mode = 'translate'"
@@ -818,15 +814,7 @@ const handleExport = async (format: ExportFormat) => {
               <div
                 class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
               >
-                <svg
-                  class="fill-current h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
+                <ChevronDown class="fill-current h-4 w-4" />
               </div>
               <!-- Dropdown -->
               <div
@@ -891,19 +879,7 @@ const handleExport = async (format: ExportFormat) => {
               class="absolute inset-0 flex items-center justify-center bg-cyan-50/80 dark:bg-cyan-900/40 z-20 pointer-events-none"
             >
               <div class="text-center">
-                <svg
-                  class="w-12 h-12 mx-auto text-cyan-500 mb-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                  ></path>
-                </svg>
+                <CloudUpload class="w-12 h-12 mx-auto text-cyan-500 mb-2" />
                 <p class="text-cyan-600 dark:text-cyan-400 font-medium">
                   {{ t.home.dragAndDrop }}
                 </p>
@@ -916,26 +892,9 @@ const handleExport = async (format: ExportFormat) => {
               class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-[#1a1a1a]/90 z-20"
             >
               <div class="text-center">
-                <svg
+                <Loader2
                   class="animate-spin w-10 h-10 mx-auto text-cyan-500 mb-3"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
+                />
                 <p class="text-cyan-600 dark:text-cyan-400 font-medium">
                   {{ t.home.processing }}
                 </p>
@@ -963,20 +922,7 @@ const handleExport = async (format: ExportFormat) => {
               ]"
               :title="isListening ? t.home.stopRecording : t.home.voiceInput"
             >
-              <svg
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                ></path>
-              </svg>
+              <Mic class="h-5 w-5" />
             </button>
 
             <!-- Upload button -->
@@ -986,44 +932,9 @@ const handleExport = async (format: ExportFormat) => {
               class="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors cursor-pointer disabled:cursor-not-allowed"
               :title="t.home.uploadFileHint"
             >
-              <!-- Spinning loader when extracting -->
-              <svg
-                v-if="isExtracting"
-                class="animate-spin h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
+              <Loader2 v-if="isExtracting" class="animate-spin h-5 w-5" />
               <!-- Paperclip icon -->
-              <svg
-                v-else
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                ></path>
-              </svg>
+              <Paperclip v-else class="h-5 w-5" />
             </button>
 
             <textarea
@@ -1056,19 +967,7 @@ const handleExport = async (format: ExportFormat) => {
                   class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-red-500 transition-colors cursor-pointer ml-2"
                   title="Clear input"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    ></path>
-                  </svg>
+                  <Trash2 class="w-4 h-4" />
                   Clear
                 </button>
               </div>
@@ -1077,27 +976,10 @@ const handleExport = async (format: ExportFormat) => {
                 :disabled="isLoading || !inputText"
                 class="bg-cyan-400 hover:bg-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-500 text-white font-bold py-2.5 px-8 rounded-full shadow-lg transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
               >
-                <svg
+                <Loader2
                   v-if="isLoading"
                   class="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
+                />
                 <span v-else>
                   {{
                     mode === "translate"
@@ -1164,70 +1046,37 @@ const handleExport = async (format: ExportFormat) => {
                     isPlaying
                       ? 'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300'
                       : isSpeaking
-                      ? 'text-cyan-600 dark:text-cyan-400'
-                      : 'text-gray-500 hover:text-cyan-600',
+                        ? 'text-cyan-600 dark:text-cyan-400'
+                        : 'text-gray-500 hover:text-cyan-600',
                   ]"
                   :title="
                     isPlaying
                       ? 'Stop audio'
                       : isSpeaking
-                      ? 'Generating audio...'
-                      : 'Read aloud'
+                        ? 'Generating audio...'
+                        : 'Read aloud'
                   "
                   :disabled="isSpeaking && !isPlaying"
                 >
                   <!-- Loading spinner when generating (not yet playing) -->
-                  <svg
+                  <Loader2
                     v-if="isSpeaking && !isPlaying"
                     class="animate-spin w-4 h-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+                  />
                   <!-- Stop icon when playing -->
-                  <svg
+                  <Square
                     v-else-if="isPlaying"
                     class="w-4 h-4"
                     fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <rect x="6" y="6" width="12" height="12" rx="1"></rect>
-                  </svg>
+                  />
                   <!-- Volume icon when idle -->
-                  <svg
-                    v-else
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                    ></path>
-                  </svg>
+                  <Volume2 v-else class="w-4 h-4" />
                   {{
                     isPlaying
                       ? t.home.stopListening
                       : isSpeaking
-                      ? t.home.processing
-                      : t.home.listen
+                        ? t.home.processing
+                        : t.home.listen
                   }}
                 </button>
 
@@ -1237,19 +1086,7 @@ const handleExport = async (format: ExportFormat) => {
                   @click="copyToClipboard"
                   class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-cyan-600 transition-colors cursor-pointer"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                    ></path>
-                  </svg>
+                  <Copy class="w-4 h-4" />
                   {{ t.home.copy }}
                 </button>
 
@@ -1261,56 +1098,10 @@ const handleExport = async (format: ExportFormat) => {
                     class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-cyan-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     :title="t.home.export"
                   >
-                    <svg
-                      v-if="isExporting"
-                      class="animate-spin w-4 h-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    <svg
-                      v-else
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                      ></path>
-                    </svg>
+                    <Loader2 v-if="isExporting" class="animate-spin w-4 h-4" />
+                    <Download v-else class="w-4 h-4" />
                     {{ isExporting ? t.common.loading : t.home.export }}
-                    <svg
-                      v-if="!isExporting"
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
+                    <ChevronDown v-if="!isExporting" class="w-3 h-3" />
                   </button>
                   <!-- Export dropdown menu -->
                   <div
@@ -1321,45 +1112,21 @@ const handleExport = async (format: ExportFormat) => {
                       @click="handleExport('pdf')"
                       class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                     >
-                      <svg
-                        class="w-4 h-4 text-red-500"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zm-3 9.5c0 .83-.67 1.5-1.5 1.5H7v2H5.5v-6H8.5c.83 0 1.5.67 1.5 1.5v1zm5 3.5h-1.5v-6h1.5c1.38 0 2.5 1.12 2.5 2.5v1c0 1.38-1.12 2.5-2.5 2.5zm-9-4v1H7v-1h1.5zm8 3c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1H14v3h1.5z"
-                        />
-                      </svg>
+                      <FileText class="w-4 h-4 text-red-500" />
                       PDF
                     </button>
                     <button
                       @click="handleExport('docx')"
                       class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                     >
-                      <svg
-                        class="w-4 h-4 text-blue-500"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM5.5 14h1.75l.75 2.5.75-2.5h1.75l-1.5 4h-1.5l-.75-2.5-.75 2.5h-1.5l-1-4z"
-                        />
-                      </svg>
+                      <FileText class="w-4 h-4 text-blue-500" />
                       DOCX
                     </button>
                     <button
                       @click="handleExport('txt')"
                       class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                     >
-                      <svg
-                        class="w-4 h-4 text-gray-500"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM6 17v-2h8v2H6zm0-4v-2h12v2H6z"
-                        />
-                      </svg>
+                      <FileText class="w-4 h-4 text-gray-500" />
                       TXT
                     </button>
                   </div>
@@ -1381,19 +1148,10 @@ const handleExport = async (format: ExportFormat) => {
                       : t.home.addToFavorites
                   "
                 >
-                  <svg
+                  <Star
                     class="w-4 h-4"
                     :fill="isCurrentFavorited ? 'currentColor' : 'none'"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                    ></path>
-                  </svg>
+                  />
                   {{ isCurrentFavorited ? t.common.save : t.common.save }}
                 </button>
 
@@ -1404,19 +1162,7 @@ const handleExport = async (format: ExportFormat) => {
                   class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-red-500 transition-colors cursor-pointer"
                   title="Clear result"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    ></path>
-                  </svg>
+                  <Trash2 class="w-4 h-4" />
                   Clear
                 </button>
               </div>
@@ -1450,15 +1196,7 @@ const handleExport = async (format: ExportFormat) => {
           <div
             class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
           >
-            <svg
-              class="fill-current h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-              />
-            </svg>
+            <ChevronDown class="fill-current h-4 w-4" />
           </div>
           <!-- Dropdown -->
           <div
@@ -1512,27 +1250,10 @@ const handleExport = async (format: ExportFormat) => {
           <div
             class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200"
           >
-            <svg
+            <Loader2
               v-if="isListening"
               class="animate-spin w-4 h-4 text-red-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            />
             {{ isListening ? t.home.processing : t.home.startRecording }}
           </div>
           <span
@@ -1597,7 +1318,9 @@ const handleExport = async (format: ExportFormat) => {
   border-radius: 999px;
   background: linear-gradient(180deg, #22d3ee 0%, #0ea5e9 100%);
   opacity: 0.35;
-  transition: height 120ms ease, opacity 120ms ease;
+  transition:
+    height 120ms ease,
+    opacity 120ms ease;
 }
 
 .waveform-active .wave-bar {
