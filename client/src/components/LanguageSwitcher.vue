@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "../composables/useI18n";
 import type { Language } from "../stores/language";
+import { ChevronDown, Check } from "lucide-vue-next";
 
 const { t, currentLanguage, setLanguage, getAllLanguages } = useI18n();
 
@@ -50,20 +51,10 @@ onBeforeUnmount(() => {
         :class="`fi fi-${currentFlag()} rounded-sm`"
         style="font-size: 1.25rem"
       ></span>
-      <svg
+      <ChevronDown
         class="w-4 h-4 text-gray-500 transition-transform duration-200"
         :class="{ 'rotate-180': isOpen }"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
+      />
     </button>
 
     <Transition
@@ -96,20 +87,10 @@ onBeforeUnmount(() => {
               style="font-size: 1.25rem"
             ></span>
             <span class="text-sm font-medium">{{ lang.nativeName }}</span>
-            <svg
+            <Check
               v-if="currentLanguage === lang.code"
               class="w-4 h-4 ms-auto text-cyan-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
+            />
           </button>
         </div>
       </div>

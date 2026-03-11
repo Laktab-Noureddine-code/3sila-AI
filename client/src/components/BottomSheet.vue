@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
+import { X } from "lucide-vue-next";
 
 const props = withDefaults(
   defineProps<{
@@ -20,7 +21,7 @@ const props = withDefaults(
     showHandle: true,
     closeOnBackdrop: true,
     closeOnSwipeDown: true,
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -106,7 +107,7 @@ watch(
       document.body.style.overflow = "";
       currentSnapIndex.value = props.initialSnap;
     }
-  }
+  },
 );
 </script>
 
@@ -214,19 +215,7 @@ watch(
                   class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 cursor-pointer -mt-1 -mr-2"
                   aria-label="Close"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <X class="w-5 h-5" />
                 </button>
               </div>
             </div>

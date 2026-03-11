@@ -12,6 +12,11 @@ import AboutView from "../views/AboutView.vue";
 import PrivacyPolicyView from "../views/PrivacyPolicyView.vue";
 import TermsOfServiceView from "../views/TermsOfServiceView.vue";
 import ContactView from "../views/ContactView.vue";
+import AdminLayout from "../views/admin/AdminLayout.vue";
+import AdminDashboard from "../views/admin/AdminDashboard.vue";
+import AdminUsers from "../views/admin/AdminUsers.vue";
+import AdminHistory from "../views/admin/AdminHistory.vue";
+import AdminSettings from "../views/admin/AdminSettings.vue";
 import { auth } from "../stores/auth";
 
 const routes: RouteRecordRaw[] = [
@@ -60,6 +65,25 @@ const routes: RouteRecordRaw[] = [
     name: "contact",
     component: ContactView as any,
   },
+  {
+    path: "/admin",
+    component: AdminLayout as any,
+    meta: { requiresAdmin: true },
+    children: [
+      { path: "", name: "admin-dashboard", component: AdminDashboard as any },
+      { path: "users", name: "admin-users", component: AdminUsers as any },
+      {
+        path: "history",
+        name: "admin-history",
+        component: AdminHistory as any,
+      },
+      {
+        path: "settings",
+        name: "admin-settings",
+        component: AdminSettings as any,
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
@@ -68,9 +92,16 @@ const router = createRouter({
 });
 
 // Redirect authenticated users away from login/signup pages
+// Protect admin routes
 router.beforeEach((to, _from, next) => {
   if (auth.isAuthenticated() && (to.name === "login" || to.name === "signup")) {
     next("/");
+  } else if (to.matched.some((r) => r.meta.requiresAdmin)) {
+    if (!auth.isAuthenticated() || !auth.user?.is_admin) {
+      next("/");
+    } else {
+      next();
+    }
   } else {
     next();
   }

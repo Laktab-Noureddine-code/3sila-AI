@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
       localStorage.removeItem("user_data");
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default {
@@ -54,7 +54,7 @@ export default {
   login(credentials: { email: string; password: string }) {
     // FastAPI OAuth2 expects form-urlencoded data
     const formData = `username=${encodeURIComponent(
-      credentials.email
+      credentials.email,
     )}&password=${encodeURIComponent(credentials.password)}`;
     return apiClient.post("/auth/login", formData, {
       headers: {
@@ -108,5 +108,44 @@ export default {
     formData.append("language", "eng");
 
     return axios.post("https://api.ocr.space/parse/image", formData);
+  },
+
+  // Admin Services
+  getAdminStats() {
+    return apiClient.get("/admin/stats");
+  },
+
+  getAdminActivityChart(days: number = 7) {
+    return apiClient.get("/admin/charts/activity", { params: { days } });
+  },
+
+  getAdminUsers(skip: number = 0, limit: number = 100) {
+    return apiClient.get("/admin/users", { params: { skip, limit } });
+  },
+
+  toggleUserStatus(userId: number) {
+    return apiClient.patch(`/admin/users/${userId}/status`);
+  },
+
+  toggleUserRole(userId: number) {
+    return apiClient.patch(`/admin/users/${userId}/role`);
+  },
+
+  deleteUser(userId: number) {
+    return apiClient.delete(`/admin/users/${userId}`);
+  },
+
+  getAdminHistory(skip: number = 0, limit: number = 100) {
+    return apiClient.get("/admin/history", { params: { skip, limit } });
+  },
+
+  getAdminUserHistory(userId: number, skip: number = 0, limit: number = 100) {
+    return apiClient.get(`/admin/history/user/${userId}`, {
+      params: { skip, limit },
+    });
+  },
+
+  updateAdminConfig(key: string, value: string, description?: string) {
+    return apiClient.put(`/admin/config/${key}`, { value, description });
   },
 };

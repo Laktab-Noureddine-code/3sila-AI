@@ -5,6 +5,16 @@ import { favorites, type FavoriteItem } from "../stores/favorites";
 import { toast } from "../stores/toast";
 import { confirm } from "../stores/confirm";
 import { useI18n } from "../composables/useI18n";
+import {
+  Star,
+  Languages,
+  Pencil,
+  CheckCircle,
+  ChevronDown,
+  RefreshCw,
+  Copy,
+  Trash2,
+} from "lucide-vue-next";
 
 const { t } = useI18n();
 
@@ -44,7 +54,7 @@ const selectedCount = computed(() => selectedItems.value.size);
 const allSelected = computed(
   () =>
     displayedFavorites.value.length > 0 &&
-    displayedFavorites.value.length === selectedCount.value
+    displayedFavorites.value.length === selectedCount.value,
 );
 
 // --- Methods ---
@@ -174,15 +184,7 @@ onMounted(() => {
         class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight"
       >
         <span class="inline-flex items-center gap-3">
-          <svg
-            class="w-10 h-10 text-yellow-500"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
-          </svg>
+          <Star class="w-10 h-10 text-yellow-500" fill="currentColor" />
           {{ t.favorites.title }}
         </span>
       </h1>
@@ -258,15 +260,10 @@ onMounted(() => {
         <div class="p-6">
           <!-- Empty State -->
           <div v-if="displayedFavorites.length === 0" class="text-center py-12">
-            <svg
+            <Star
               class="mx-auto h-16 w-16 text-yellow-400/50"
               fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-              />
-            </svg>
+            />
             <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
               {{ t.favorites.empty }}
             </h3>
@@ -349,32 +346,12 @@ onMounted(() => {
                         : t.favorites.translation
                     }}
                   </span>
-                  <svg
-                    class="w-4 h-4 text-yellow-500"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                    />
-                  </svg>
+                  <Star class="w-4 h-4 text-yellow-500" fill="currentColor" />
                   <span
                     v-if="item.targetLanguage"
                     class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-300"
                   >
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-                      />
-                    </svg>
+                    <Languages class="w-3 h-3" />
                     {{ item.targetLanguage }}
                   </span>
                   <span class="text-xs text-gray-500 dark:text-gray-400 ml-auto"
@@ -387,19 +364,9 @@ onMounted(() => {
                   <!-- Input Panel -->
                   <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
                     <div class="flex items-center gap-2 mb-2">
-                      <svg
+                      <Pencil
                         class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
+                      />
                       <span
                         class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                         >{{ t.favorites.input }}</span
@@ -420,19 +387,9 @@ onMounted(() => {
                     class="bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-3 border border-yellow-200 dark:border-yellow-800"
                   >
                     <div class="flex items-center gap-2 mb-2">
-                      <svg
+                      <CheckCircle
                         class="w-4 h-4 text-yellow-600 dark:text-yellow-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                      />
                       <span
                         class="text-xs font-semibold text-yellow-600 dark:text-yellow-400 uppercase tracking-wide"
                         >{{ t.favorites.result }}</span
@@ -454,22 +411,12 @@ onMounted(() => {
                   @click="toggleExpand(item.id)"
                   class="mt-2 flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors cursor-pointer"
                 >
-                  <svg
+                  <ChevronDown
                     :class="[
                       'w-4 h-4 transition-transform',
                       isExpanded(item.id) ? 'rotate-180' : '',
                     ]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  />
                   {{
                     isExpanded(item.id)
                       ? t.favorites.showLess
@@ -486,19 +433,7 @@ onMounted(() => {
                   class="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-cyan-900/50 transition-colors cursor-pointer"
                   :title="t.favorites.useInTranslator"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
+                  <RefreshCw class="w-5 h-5" />
                 </button>
 
                 <!-- Copy Result -->
@@ -507,19 +442,7 @@ onMounted(() => {
                   class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer"
                   :title="t.favorites.copyResult"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
+                  <Copy class="w-5 h-5" />
                 </button>
 
                 <!-- Delete -->
@@ -529,19 +452,7 @@ onMounted(() => {
                   class="p-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50 cursor-pointer"
                   :title="t.favorites.removeFromFavorites"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <Trash2 class="w-5 h-5" />
                 </button>
               </div>
             </div>

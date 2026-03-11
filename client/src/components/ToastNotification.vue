@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { toast } from "../stores/toast";
+import { Check, X, AlertTriangle, Info } from "lucide-vue-next";
 
 const getToastClasses = (type: string) => {
   const baseClasses =
@@ -70,65 +71,25 @@ const getCloseButtonClasses = (type: string) => {
           ]"
         >
           <!-- Success Icon -->
-          <svg
+          <Check
             v-if="t.type === 'success'"
             class="w-5 h-5 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.5"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+            :stroke-width="2.5"
+          />
           <!-- Error Icon -->
-          <svg
+          <X
             v-else-if="t.type === 'error'"
             class="w-5 h-5 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.5"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+            :stroke-width="2.5"
+          />
           <!-- Warning Icon -->
-          <svg
+          <AlertTriangle
             v-else-if="t.type === 'warning'"
             class="w-5 h-5 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.5"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
+            :stroke-width="2.5"
+          />
           <!-- Info Icon -->
-          <svg
-            v-else
-            class="w-5 h-5 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.5"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <Info v-else class="w-5 h-5 text-white" :stroke-width="2.5" />
         </div>
 
         <!-- Message -->
@@ -160,19 +121,7 @@ const getCloseButtonClasses = (type: string) => {
           ]"
           aria-label="Close notification"
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          <X class="w-4 h-4" />
         </button>
 
         <!-- Progress bar -->
@@ -185,10 +134,10 @@ const getCloseButtonClasses = (type: string) => {
               t.type === 'success'
                 ? 'bg-green-500'
                 : t.type === 'error'
-                ? 'bg-red-500'
-                : t.type === 'warning'
-                ? 'bg-amber-500'
-                : 'bg-blue-500',
+                  ? 'bg-red-500'
+                  : t.type === 'warning'
+                    ? 'bg-amber-500'
+                    : 'bg-blue-500',
             ]"
             :style="{ animationDuration: (t.duration || 8000) + 'ms' }"
           ></div>
