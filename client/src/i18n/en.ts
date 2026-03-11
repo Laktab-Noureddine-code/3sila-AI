@@ -27,6 +27,7 @@ export default {
     login: "Log in",
     signup: "Sign up",
     logout: "Log out",
+    profile: "Profile",
     getStarted: "Get Started",
     getStartedFree: "Get Started — It's Free",
   },
@@ -153,6 +154,13 @@ export default {
     previous: "Previous",
     next: "Next",
     pageOf: "Page {current} of {total} ({items} total items)",
+    deleteAll: "Delete All",
+    confirmDeleteAllSummaries:
+      "Are you sure you want to delete ALL your summaries? This action cannot be undone.",
+    confirmDeleteAllTranslations:
+      "Are you sure you want to delete ALL your translations? This action cannot be undone.",
+    allDeleted: "All items deleted successfully",
+    deleteAllFailed: "Failed to delete all items. Please try again.",
   },
 
   // Favorites Page
@@ -280,6 +288,42 @@ export default {
     privacyPolicy: "Privacy Policy",
     createAccount: "Create an account",
     startHumanizing: "Start humanizing your text today",
+    // Forgot/Reset Password
+    forgotPasswordTitle: "Forgot Password",
+    forgotPasswordDescription:
+      "Enter your email and we'll send you a verification code to reset your password.",
+    sendResetCode: "Send Reset Code",
+    sendingCode: "Sending...",
+    codeSent: "Verification code sent! Check your email.",
+    resetPasswordTitle: "Reset Password",
+    resetPasswordDescription:
+      "Enter the 6-digit code sent to your email and your new password.",
+    verificationCode: "Verification Code",
+    codePlaceholder: "Enter 6-digit code",
+    newPassword: "New Password",
+    newPasswordPlaceholder: "Enter new password",
+    confirmNewPassword: "Confirm New Password",
+    confirmNewPasswordPlaceholder: "Re-enter new password",
+    resetPassword: "Reset Password",
+    resetting: "Resetting...",
+    passwordResetSuccess: "Password reset successfully! You can now log in.",
+    backToLogin: "Back to Login",
+    // Change Password
+    changePassword: "Change Password",
+    oldPassword: "Current Password",
+    oldPasswordPlaceholder: "Enter current password",
+    changingPassword: "Changing...",
+    passwordChanged: "Password changed successfully!",
+    // Profile
+    profile: "Profile",
+    profileDescription: "Manage your account settings",
+    updateEmail: "Update Email",
+    currentEmail: "Current Email",
+    newEmail: "New Email",
+    newEmailPlaceholder: "Enter new email",
+    updatingProfile: "Updating...",
+    profileUpdated: "Profile updated successfully!",
+    passwordsDoNotMatch: "Passwords do not match",
   },
 
   // Footer

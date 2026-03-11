@@ -195,6 +195,38 @@ const deleteItem = async (itemId: string) => {
   }
 };
 
+const deleteAll = async () => {
+  const isSummaries = activeTab.value === "summaries";
+  const typeLabel = isSummaries ? "summaries" : "translations";
+
+  const confirmed = await confirm.show({
+    title: t.value.history.deleteAll,
+    message: isSummaries
+      ? t.value.history.confirmDeleteAllSummaries
+      : t.value.history.confirmDeleteAllTranslations,
+    confirmText: t.value.common.delete,
+    cancelText: t.value.common.cancel,
+    type: "danger",
+  });
+  if (!confirmed) return;
+
+  isDeleting.value = true;
+  try {
+    if (isSummaries) {
+      await api.deleteAllSummaries();
+    } else {
+      await api.deleteAllTranslations();
+    }
+    toast.success(t.value.history.allDeleted);
+    await fetchHistory();
+  } catch (error) {
+    console.error("Error deleting all:", error);
+    toast.error(t.value.history.deleteAllFailed);
+  } finally {
+    isDeleting.value = false;
+  }
+};
+
 const deleteSelected = async () => {
   if (selectedItems.value.size === 0) return;
 
@@ -235,6 +267,11 @@ const copyToClipboard = (text: string) => {
 
 // Check if a history item is favorited
 const isItemFavorited = (item: any): boolean => {
+  // For authenticated users, use the server-side is_favorite field
+  if (auth.isAuthenticated() && item.is_favorite !== undefined) {
+    return item.is_favorite;
+  }
+  // Fallback to localStorage-based check
   const inputText = item.input_text || item.original_text || "";
   const resultText =
     item.result || item.output_text || item.translated_text || "";
@@ -242,7 +279,26 @@ const isItemFavorited = (item: any): boolean => {
 };
 
 // Toggle favorite for a history item
-const toggleItemFavorite = (item: any) => {
+const toggleItemFavorite = async (item: any) => {
+  // For authenticated users, use server-side toggle
+  if (auth.isAuthenticated() && item.id) {
+    try {
+      const isFav = await favorites.toggleServerFavorite(Number(item.id));
+      // Update local state
+      item.is_favorite = isFav;
+      if (isFav) {
+        toast.success("Added to favorites!");
+      } else {
+        toast.success("Removed from favorites");
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Failed to update favorite");
+    }
+    return;
+  }
+
+  // Fallback to localStorage
   const inputText = item.input_text || item.original_text || "";
   const resultText =
     item.result || item.output_text || item.translated_text || "";
@@ -393,15 +449,27 @@ onMounted(() => {
                 </button>
               </div>
 
-              <!-- Delete Selected Button -->
-              <button
-                v-if="selectedCount > 0"
-                @click="deleteSelected"
-                :disabled="isDeleting"
-                class="px-4 py-2 rounded-lg font-medium bg-red-500/20 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700 hover:bg-red-500/30 disabled:opacity-50 transition-all duration-200 cursor-pointer"
-              >
-                {{ t.history.deleteSelected }} ({{ selectedCount }})
-              </button>
+              <div class="flex gap-2">
+                <!-- Delete All Button (only on summaries/translations tab) -->
+                <button
+                  v-if="activeTab !== 'all' && history.length > 0"
+                  @click="deleteAll"
+                  :disabled="isDeleting"
+                  class="px-4 py-2 rounded-lg font-medium bg-red-500/20 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700 hover:bg-red-500/30 disabled:opacity-50 transition-all duration-200 cursor-pointer"
+                >
+                  {{ t.history.deleteAll }}
+                </button>
+
+                <!-- Delete Selected Button -->
+                <button
+                  v-if="selectedCount > 0"
+                  @click="deleteSelected"
+                  :disabled="isDeleting"
+                  class="px-4 py-2 rounded-lg font-medium bg-red-500/20 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700 hover:bg-red-500/30 disabled:opacity-50 transition-all duration-200 cursor-pointer"
+                >
+                  {{ t.history.deleteSelected }} ({{ selectedCount }})
+                </button>
+              </div>
             </div>
           </div>
         </div>

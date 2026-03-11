@@ -77,12 +77,13 @@ const handleAuth = async () => {
             >
               {{ t.auth.password }}
             </label>
-            <a
-              href="#"
-              class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline decoration-1 underline-offset-2"
+            <button
+              type="button"
+              @click="router.push('/forgot-password')"
+              class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline decoration-1 underline-offset-2 cursor-pointer"
             >
               {{ t.auth.forgotPassword }}
-            </a>
+            </button>
           </div>
           <input
             id="password"

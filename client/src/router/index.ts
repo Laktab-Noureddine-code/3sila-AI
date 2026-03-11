@@ -12,6 +12,9 @@ import AboutView from "../views/AboutView.vue";
 import PrivacyPolicyView from "../views/PrivacyPolicyView.vue";
 import TermsOfServiceView from "../views/TermsOfServiceView.vue";
 import ContactView from "../views/ContactView.vue";
+import ForgotPasswordView from "../views/ForgotPasswordView.vue";
+import ResetPasswordView from "../views/ResetPasswordView.vue";
+import ProfileView from "../views/ProfileView.vue";
 import AdminLayout from "../views/admin/AdminLayout.vue";
 import AdminDashboard from "../views/admin/AdminDashboard.vue";
 import AdminUsers from "../views/admin/AdminUsers.vue";
@@ -66,6 +69,21 @@ const routes: RouteRecordRaw[] = [
     component: ContactView as any,
   },
   {
+    path: "/forgot-password",
+    name: "forgot-password",
+    component: ForgotPasswordView as any,
+  },
+  {
+    path: "/reset-password",
+    name: "reset-password",
+    component: ResetPasswordView as any,
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: ProfileView as any,
+  },
+  {
     path: "/admin",
     component: AdminLayout as any,
     meta: { requiresAdmin: true },
@@ -96,6 +114,8 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   if (auth.isAuthenticated() && (to.name === "login" || to.name === "signup")) {
     next("/");
+  } else if (to.name === "profile" && !auth.isAuthenticated()) {
+    next("/login");
   } else if (to.matched.some((r) => r.meta.requiresAdmin)) {
     if (!auth.isAuthenticated() || !auth.user?.is_admin) {
       next("/");

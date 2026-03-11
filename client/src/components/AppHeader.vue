@@ -17,6 +17,7 @@ import {
   Mail,
   Menu,
   X,
+  User,
 } from "lucide-vue-next";
 
 const { t } = useI18n();
@@ -268,6 +269,14 @@ onBeforeUnmount(() => {
                       <Star class="w-4 h-4" />
                       {{ t.nav.favorites }}
                     </RouterLink>
+                    <RouterLink
+                      to="/profile"
+                      @click="isProfileMenuOpen = false"
+                      class="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <User class="w-4 h-4" />
+                      {{ t.auth.profile }}
+                    </RouterLink>
                     <!-- Admin Panel Link -->
                     <RouterLink
                       v-if="auth.user?.is_admin"
@@ -430,6 +439,18 @@ onBeforeUnmount(() => {
             >
               <Mail class="w-5 h-5" />
               {{ t.nav.contact }}
+            </RouterLink>
+
+            <!-- Admin Panel (mobile) -->
+            <RouterLink
+              v-if="auth.isAuthenticated()"
+              to="/profile"
+              @click="closeMobileMenu"
+              class="flex items-center gap-3 px-4 py-3 text-base font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              active-class="!bg-cyan-50 dark:!bg-cyan-900/20 !text-cyan-600 dark:!text-cyan-400"
+            >
+              <User class="w-5 h-5" />
+              {{ t.auth.profile }}
             </RouterLink>
 
             <!-- Admin Panel (mobile) -->
