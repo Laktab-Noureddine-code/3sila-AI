@@ -5,6 +5,7 @@ import { favorites, type FavoriteItem } from "../stores/favorites";
 import { toast } from "../stores/toast";
 import { confirm } from "../stores/confirm";
 import { useI18n } from "../composables/useI18n";
+import SkeletonLoader from "../components/SkeletonLoader.vue";
 import {
   Star,
   Languages,
@@ -58,6 +59,10 @@ const allSelected = computed(
 );
 
 // --- Methods ---
+const fetchFavorites = async () => {
+  await favorites.fetchFavorites();
+};
+
 const handleTabChange = (tab: "all" | "summaries" | "translations") => {
   activeTab.value = tab;
   selectedItems.value.clear();
@@ -109,7 +114,12 @@ const deleteItem = async (itemId: string) => {
 
   isDeleting.value = true;
   try {
-    favorites.remove(itemId);
+    if (favorites.isServerMode) {
+      await favorites.toggleServerFavorite(Number(itemId));
+      await favorites.fetchFavorites(favorites.currentPage);
+    } else {
+      favorites.remove(itemId);
+    }
     selectedItems.value.delete(itemId);
     toast.success("Removed from favorites");
   } catch (error) {
@@ -137,7 +147,14 @@ const deleteSelected = async () => {
   const itemsToDelete = Array.from(selectedItems.value);
 
   try {
-    itemsToDelete.forEach((id) => favorites.remove(id));
+    if (favorites.isServerMode) {
+      await Promise.all(
+        itemsToDelete.map((id) => favorites.toggleServerFavorite(Number(id))),
+      );
+      await favorites.fetchFavorites(favorites.currentPage);
+    } else {
+      itemsToDelete.forEach((id) => favorites.remove(id));
+    }
     selectedItems.value.clear();
     toast.success("Removed from favorites");
   } catch (error) {
@@ -149,7 +166,10 @@ const deleteSelected = async () => {
 };
 
 const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text);
+  // Strip HTML tags for plain text copy
+  const tmp = document.createElement("div");
+  tmp.innerHTML = text;
+  navigator.clipboard.writeText(tmp.textContent || text);
   toast.success("Copied to clipboard!");
 };
 
@@ -165,12 +185,34 @@ const useInTranslator = (item: FavoriteItem) => {
   });
 };
 
+// Pagination (server mode)
+const goToNextPage = () => {
+  if (favorites.currentPage < favorites.totalPages) {
+    favorites.fetchFavorites(favorites.currentPage + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+};
+
+const goToPreviousPage = () => {
+  if (favorites.currentPage > 1) {
+    favorites.fetchFavorites(favorites.currentPage - 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+};
+
+const goToPage = (page: number) => {
+  favorites.fetchFavorites(page);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 // --- Lifecycle ---
 onMounted(() => {
   const savedTheme = localStorage.getItem("theme");
   isDark.value =
     savedTheme === "dark" ||
     (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  fetchFavorites();
 });
 </script>
 
@@ -258,8 +300,16 @@ onMounted(() => {
 
         <!-- Content Area -->
         <div class="p-6">
+          <!-- Loading State -->
+          <div v-if="favorites.isLoading" class="py-4">
+            <SkeletonLoader type="card" :count="3" />
+          </div>
+
           <!-- Empty State -->
-          <div v-if="displayedFavorites.length === 0" class="text-center py-12">
+          <div
+            v-else-if="displayedFavorites.length === 0"
+            class="text-center py-12"
+          >
             <Star
               class="mx-auto h-16 w-16 text-yellow-400/50"
               fill="currentColor"
@@ -372,14 +422,13 @@ onMounted(() => {
                         >{{ t.favorites.input }}</span
                       >
                     </div>
-                    <p
+                    <div
                       :class="[
-                        'text-sm text-gray-700 dark:text-gray-300',
+                        'text-sm text-gray-700 dark:text-gray-300 tiptap-content',
                         isExpanded(item.id) ? '' : 'line-clamp-3',
                       ]"
-                    >
-                      {{ item.inputText }}
-                    </p>
+                      v-html="item.inputText"
+                    ></div>
                   </div>
 
                   <!-- Result Panel -->
@@ -395,14 +444,13 @@ onMounted(() => {
                         >{{ t.favorites.result }}</span
                       >
                     </div>
-                    <p
+                    <div
                       :class="[
-                        'text-sm text-gray-800 dark:text-gray-200',
+                        'text-sm text-gray-800 dark:text-gray-200 tiptap-content',
                         isExpanded(item.id) ? '' : 'line-clamp-3',
                       ]"
-                    >
-                      {{ item.resultText }}
-                    </p>
+                      v-html="item.resultText"
+                    ></div>
                   </div>
                 </div>
 
@@ -456,6 +504,44 @@ onMounted(() => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Pagination (server mode) -->
+        <div
+          v-if="favorites.isServerMode && favorites.totalPages > 1"
+          class="border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-[#252525] px-6 py-4"
+        >
+          <div class="flex items-center justify-between gap-4">
+            <button
+              @click="goToPreviousPage"
+              :disabled="favorites.currentPage === 1"
+              class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              ← {{ t.history.previous }}
+            </button>
+            <div class="flex items-center gap-1">
+              <button
+                v-for="page in favorites.totalPages"
+                :key="page"
+                @click="goToPage(page)"
+                :class="[
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer',
+                  favorites.currentPage === page
+                    ? 'bg-yellow-400 text-black font-bold'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600',
+                ]"
+              >
+                {{ page }}
+              </button>
+            </div>
+            <button
+              @click="goToNextPage"
+              :disabled="favorites.currentPage === favorites.totalPages"
+              class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            >
+              {{ t.history.next }} →
+            </button>
           </div>
         </div>
       </div>

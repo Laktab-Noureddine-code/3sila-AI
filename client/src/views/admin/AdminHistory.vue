@@ -68,7 +68,11 @@ const toggleExpand = (id: number) => {
 
 const truncate = (text: string | null, len = 80) => {
   if (!text) return "—";
-  return text.length > len ? text.slice(0, len) + "..." : text;
+  // Strip HTML tags for truncated preview
+  const tmp = document.createElement("div");
+  tmp.innerHTML = text;
+  const plain = tmp.textContent || text;
+  return plain.length > len ? plain.slice(0, len) + "..." : plain;
 };
 
 const formatDate = (dateStr: string) => {
@@ -194,7 +198,10 @@ onMounted(() => fetchHistory());
                 class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs"
               >
                 <template v-if="expandedIds.has(record.id)">
-                  {{ record.original_text }}
+                  <div
+                    class="tiptap-content"
+                    v-html="record.original_text"
+                  ></div>
                 </template>
                 <template v-else>
                   {{ truncate(record.original_text) }}
@@ -204,7 +211,10 @@ onMounted(() => fetchHistory());
                 class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs"
               >
                 <template v-if="expandedIds.has(record.id)">
-                  {{ getResultText(record) }}
+                  <div
+                    class="tiptap-content"
+                    v-html="getResultText(record)"
+                  ></div>
                 </template>
                 <template v-else>
                   {{ truncate(getResultText(record)) }}
@@ -276,12 +286,13 @@ onMounted(() => fetchHistory());
             >
               {{ t.admin.originalText }}
             </p>
-            <p class="text-sm text-gray-700 dark:text-gray-300">
-              {{
-                expandedIds.has(record.id)
-                  ? record.original_text
-                  : truncate(record.original_text, 100)
-              }}
+            <div
+              v-if="expandedIds.has(record.id)"
+              class="text-sm text-gray-700 dark:text-gray-300 tiptap-content"
+              v-html="record.original_text"
+            ></div>
+            <p v-else class="text-sm text-gray-700 dark:text-gray-300">
+              {{ truncate(record.original_text, 100) }}
             </p>
           </div>
           <div>
@@ -290,12 +301,13 @@ onMounted(() => fetchHistory());
             >
               {{ t.admin.resultText }}
             </p>
-            <p class="text-sm text-gray-700 dark:text-gray-300">
-              {{
-                expandedIds.has(record.id)
-                  ? getResultText(record)
-                  : truncate(getResultText(record), 100)
-              }}
+            <div
+              v-if="expandedIds.has(record.id)"
+              class="text-sm text-gray-700 dark:text-gray-300 tiptap-content"
+              v-html="getResultText(record)"
+            ></div>
+            <p v-else class="text-sm text-gray-700 dark:text-gray-300">
+              {{ truncate(getResultText(record), 100) }}
             </p>
           </div>
         </div>

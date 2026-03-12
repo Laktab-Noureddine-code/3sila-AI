@@ -27,6 +27,7 @@ export default {
     login: "تسجيل الدخول",
     signup: "إنشاء حساب",
     logout: "تسجيل الخروج",
+    profile: "الملف الشخصي",
     getStarted: "ابدأ الآن",
     getStartedFree: "ابدأ الآن — مجاناً",
   },
@@ -153,6 +154,13 @@ export default {
     previous: "السابق",
     next: "التالي",
     pageOf: "صفحة {current} من {total} ({items} عنصر)",
+    deleteAll: "حذف الكل",
+    confirmDeleteAllSummaries:
+      "هل أنت متأكد من حذف جميع الملخصات؟ لا يمكن التراجع عن هذا الإجراء.",
+    confirmDeleteAllTranslations:
+      "هل أنت متأكد من حذف جميع الترجمات؟ لا يمكن التراجع عن هذا الإجراء.",
+    allDeleted: "تم حذف جميع العناصر بنجاح",
+    deleteAllFailed: "فشل في حذف جميع العناصر. الرجاء المحاولة مرة أخرى.",
   },
 
   // Favorites Page
@@ -274,6 +282,43 @@ export default {
     privacyPolicy: "سياسة الخصوصية",
     createAccount: "إنشاء حساب",
     startHumanizing: "ابدأ بأنسنة نصك اليوم",
+    // Forgot/Reset Password
+    forgotPasswordTitle: "نسيت كلمة المرور",
+    forgotPasswordDescription:
+      "أدخل بريدك الإلكتروني وسنرسل لك رمز تحقق لإعادة تعيين كلمة المرور.",
+    sendResetCode: "إرسال رمز التحقق",
+    sendingCode: "جاري الإرسال...",
+    codeSent: "تم إرسال رمز التحقق! تحقق من بريدك الإلكتروني.",
+    resetPasswordTitle: "إعادة تعيين كلمة المرور",
+    resetPasswordDescription:
+      "أدخل الرمز المكون من 6 أرقام المرسل إلى بريدك الإلكتروني وكلمة المرور الجديدة.",
+    verificationCode: "رمز التحقق",
+    codePlaceholder: "أدخل الرمز المكون من 6 أرقام",
+    newPassword: "كلمة المرور الجديدة",
+    newPasswordPlaceholder: "أدخل كلمة المرور الجديدة",
+    confirmNewPassword: "تأكيد كلمة المرور الجديدة",
+    confirmNewPasswordPlaceholder: "أعد إدخال كلمة المرور الجديدة",
+    resetPassword: "إعادة تعيين كلمة المرور",
+    resetting: "جاري إعادة التعيين...",
+    passwordResetSuccess:
+      "تم إعادة تعيين كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول.",
+    backToLogin: "العودة لتسجيل الدخول",
+    // Change Password
+    changePassword: "تغيير كلمة المرور",
+    oldPassword: "كلمة المرور الحالية",
+    oldPasswordPlaceholder: "أدخل كلمة المرور الحالية",
+    changingPassword: "جاري التغيير...",
+    passwordChanged: "تم تغيير كلمة المرور بنجاح!",
+    // Profile
+    profile: "الملف الشخصي",
+    profileDescription: "إدارة إعدادات حسابك",
+    updateEmail: "تحديث البريد الإلكتروني",
+    currentEmail: "البريد الإلكتروني الحالي",
+    newEmail: "البريد الإلكتروني الجديد",
+    newEmailPlaceholder: "أدخل البريد الإلكتروني الجديد",
+    updatingProfile: "جاري التحديث...",
+    profileUpdated: "تم تحديث الملف الشخصي بنجاح!",
+    passwordsDoNotMatch: "كلمات المرور غير متطابقة",
   },
 
   // Footer

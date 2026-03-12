@@ -75,6 +75,29 @@ export default {
     });
   },
 
+  sendResetCode(email: string) {
+    return apiClient.post("/auth/send-reset-code", { email });
+  },
+
+  resetPasswordWithCode(email: string, code: string, new_password: string) {
+    return apiClient.post("/auth/reset-password-with-code", {
+      email,
+      code,
+      new_password,
+    });
+  },
+
+  changePassword(old_password: string, new_password: string) {
+    return apiClient.post("/auth/change-password", {
+      old_password,
+      new_password,
+    });
+  },
+
+  updateProfile(data: { email?: string }) {
+    return apiClient.put("/auth/profile", data);
+  },
+
   // History Services
   getHistory(page: number = 1, perPage: number = 20) {
     return apiClient.get("/history/", { params: { page, per_page: perPage } });
@@ -98,6 +121,24 @@ export default {
 
   deleteSummary(id: string) {
     return apiClient.delete(`/history/summaries/${id}`);
+  },
+
+  deleteAllSummaries() {
+    return apiClient.delete("/history/summaries/all");
+  },
+
+  deleteAllTranslations() {
+    return apiClient.delete("/history/translations/all");
+  },
+
+  getFavorites(page: number = 1, perPage: number = 20) {
+    return apiClient.get("/history/favorites", {
+      params: { page, per_page: perPage },
+    });
+  },
+
+  toggleFavorite(itemId: number) {
+    return apiClient.patch(`/history/${itemId}/favorite`);
   },
 
   // OCR Service

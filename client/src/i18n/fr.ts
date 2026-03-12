@@ -27,6 +27,7 @@ export default {
     login: "Connexion",
     signup: "Inscription",
     logout: "Déconnexion",
+    profile: "Profil",
     getStarted: "Commencer",
     getStartedFree: "Commencer — C'est gratuit",
   },
@@ -158,6 +159,13 @@ export default {
     previous: "Précédent",
     next: "Suivant",
     pageOf: "Page {current} sur {total} ({items} éléments au total)",
+    deleteAll: "Tout supprimer",
+    confirmDeleteAllSummaries:
+      "Êtes-vous sûr de vouloir supprimer TOUS vos résumés ? Cette action est irréversible.",
+    confirmDeleteAllTranslations:
+      "Êtes-vous sûr de vouloir supprimer TOUTES vos traductions ? Cette action est irréversible.",
+    allDeleted: "Tous les éléments ont été supprimés avec succès",
+    deleteAllFailed: "Échec de la suppression. Veuillez réessayer.",
   },
 
   // Favorites Page
@@ -286,6 +294,43 @@ export default {
     privacyPolicy: "Politique de confidentialité",
     createAccount: "Créer un compte",
     startHumanizing: "Commencez à humaniser votre texte dès aujourd'hui",
+    // Forgot/Reset Password
+    forgotPasswordTitle: "Mot de passe oublié",
+    forgotPasswordDescription:
+      "Entrez votre email et nous vous enverrons un code de vérification pour réinitialiser votre mot de passe.",
+    sendResetCode: "Envoyer le code",
+    sendingCode: "Envoi en cours...",
+    codeSent: "Code de vérification envoyé ! Vérifiez votre email.",
+    resetPasswordTitle: "Réinitialiser le mot de passe",
+    resetPasswordDescription:
+      "Entrez le code à 6 chiffres envoyé à votre email et votre nouveau mot de passe.",
+    verificationCode: "Code de vérification",
+    codePlaceholder: "Entrez le code à 6 chiffres",
+    newPassword: "Nouveau mot de passe",
+    newPasswordPlaceholder: "Entrez le nouveau mot de passe",
+    confirmNewPassword: "Confirmer le nouveau mot de passe",
+    confirmNewPasswordPlaceholder: "Retapez le nouveau mot de passe",
+    resetPassword: "Réinitialiser le mot de passe",
+    resetting: "Réinitialisation...",
+    passwordResetSuccess:
+      "Mot de passe réinitialisé avec succès ! Vous pouvez maintenant vous connecter.",
+    backToLogin: "Retour à la connexion",
+    // Change Password
+    changePassword: "Changer le mot de passe",
+    oldPassword: "Mot de passe actuel",
+    oldPasswordPlaceholder: "Entrez le mot de passe actuel",
+    changingPassword: "Changement en cours...",
+    passwordChanged: "Mot de passe changé avec succès !",
+    // Profile
+    profile: "Profil",
+    profileDescription: "Gérez les paramètres de votre compte",
+    updateEmail: "Mettre à jour l'email",
+    currentEmail: "Email actuel",
+    newEmail: "Nouvel email",
+    newEmailPlaceholder: "Entrez le nouvel email",
+    updatingProfile: "Mise à jour...",
+    profileUpdated: "Profil mis à jour avec succès !",
+    passwordsDoNotMatch: "Les mots de passe ne correspondent pas",
   },
 
   // Footer

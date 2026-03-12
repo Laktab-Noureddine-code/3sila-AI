@@ -16,6 +16,7 @@ import { exportResult, type ExportFormat } from "../services/export";
 import type { SpeechRecognizer } from "microsoft-cognitiveservices-speech-sdk";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import BottomSheet from "../components/BottomSheet.vue";
+import TiptapEditor from "../components/TiptapEditor.vue";
 import {
   ChevronLeft,
   ChevronRight,
@@ -74,6 +75,7 @@ const languages = [
 
 // --- State ---
 const inputText = ref("");
+const inputPlainText = ref("");
 const resultText = ref("");
 const mode = ref<"translate" | "summarize">("translate");
 const targetLanguage = ref("French");
@@ -311,6 +313,12 @@ onMounted(() => {
       inputText.value = savedInput;
     }
   }
+  // Sync plain text from loaded HTML
+  if (inputText.value) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = inputText.value;
+    inputPlainText.value = tmp.textContent || "";
+  }
 
   if (prefillResult) {
     resultText.value = prefillResult;
@@ -348,16 +356,23 @@ onMounted(() => {
 
 // --- Computed ---
 const characterCount = computed(() => {
-  return inputText.value.length;
+  return inputPlainText.value.length;
 });
 
 const resultCharacterCount = computed(() => {
-  return resultText.value.length;
+  // Strip HTML tags for character count
+  const tmp = document.createElement("div");
+  tmp.innerHTML = resultText.value;
+  return tmp.textContent?.length || 0;
 });
+
+const onInputTextUpdate = (text: string) => {
+  inputPlainText.value = text;
+};
 
 // --- Methods ---
 const handleSubmit = async () => {
-  if (!inputText.value) return;
+  if (!inputPlainText.value.trim()) return;
 
   isLoading.value = true;
   resultText.value = ""; // Clear previous result
@@ -410,7 +425,7 @@ const toggleFavorite = () => {
     toast.warning(t.value.home.loginForFavorites);
     return;
   }
-  if (!inputText.value || !resultText.value) return;
+  if (!inputPlainText.value.trim() || !resultText.value) return;
 
   const isFav = favorites.toggle({
     type: mode.value === "translate" ? "translation" : "summary",
@@ -430,7 +445,10 @@ const toggleFavorite = () => {
 
 const copyToClipboard = () => {
   if (resultText.value) {
-    navigator.clipboard.writeText(resultText.value);
+    // Copy plain text version
+    const tmp = document.createElement("div");
+    tmp.innerHTML = resultText.value;
+    navigator.clipboard.writeText(tmp.textContent || resultText.value);
     toast.success("Copied to clipboard!");
   }
 };
@@ -470,7 +488,8 @@ const processFile = async (file: File) => {
   try {
     const response = await api.extractTextFromFile(file);
     const parsedText = response.data?.ParsedResults?.[0]?.ParsedText || "";
-    inputText.value = parsedText;
+    inputText.value = `<p>${parsedText}</p>`;
+    inputPlainText.value = parsedText;
   } catch (error: any) {
     console.error(error);
     toast.error("Failed to extract text from file.");
@@ -528,7 +547,7 @@ const closeMicModal = () => {
   isListening.value = false;
   isProcessingSpeech.value = false;
   interimTranscript.value = "";
-  baseSpeechText.value = inputText.value.trim();
+  baseSpeechText.value = inputPlainText.value.trim();
   showMicModal.value = false;
 };
 
@@ -590,7 +609,7 @@ const toggleMicrophone = async (languageName?: string) => {
 
   // Start Azure speech recognition
   try {
-    baseSpeechText.value = inputText.value.trim();
+    baseSpeechText.value = inputPlainText.value.trim();
     interimTranscript.value = "";
 
     const speechLang =
@@ -604,7 +623,8 @@ const toggleMicrophone = async (languageName?: string) => {
           .filter(Boolean)
           .join(" ")
           .trim();
-        inputText.value = combined;
+        inputText.value = `<p>${combined}</p>`;
+        inputPlainText.value = combined;
       },
       onRecognized: (transcript: string) => {
         // Append final recognized text
@@ -614,21 +634,22 @@ const toggleMicrophone = async (languageName?: string) => {
           .join(" ")
           .trim();
         interimTranscript.value = "";
-        inputText.value = baseSpeechText.value;
+        inputText.value = `<p>${baseSpeechText.value}</p>`;
+        inputPlainText.value = baseSpeechText.value;
       },
       onError: (error: string) => {
         console.error("Speech recognition error:", error);
         isListening.value = false;
         azureRecognizer = null;
         interimTranscript.value = "";
-        baseSpeechText.value = inputText.value.trim();
+        baseSpeechText.value = inputPlainText.value.trim();
         toast.error(error);
       },
       onSessionStopped: () => {
         isListening.value = false;
         azureRecognizer = null;
         interimTranscript.value = "";
-        baseSpeechText.value = inputText.value.trim();
+        baseSpeechText.value = inputPlainText.value.trim();
       },
     });
 
@@ -667,7 +688,11 @@ const readResult = () => {
   // Start speaking
   if (!isSpeaking.value) {
     isSpeaking.value = true;
-    azureSynthesizer = textToSpeech(resultText.value, targetLanguage.value, {
+    // Extract plain text for speech
+    const tmp = document.createElement("div");
+    tmp.innerHTML = resultText.value;
+    const plainResult = tmp.textContent || resultText.value;
+    azureSynthesizer = textToSpeech(plainResult, targetLanguage.value, {
       onStarted: () => {
         isPlaying.value = true;
       },
@@ -937,11 +962,14 @@ const handleExport = async (format: ExportFormat) => {
               <Paperclip v-else class="h-5 w-5" />
             </button>
 
-            <textarea
-              v-model="inputText"
-              :placeholder="t.home.inputPlaceholder"
-              class="w-full flex-1 resize-none outline-none text-gray-700 dark:text-gray-300 text-lg bg-transparent placeholder-gray-400 leading-relaxed pt-10 pr-14 custom-scrollbar"
-            ></textarea>
+            <div class="flex-1 overflow-y-auto pt-10 custom-scrollbar">
+              <TiptapEditor
+                v-model="inputText"
+                :placeholder="t.home.inputPlaceholder"
+                :editable="true"
+                @update:text-content="onInputTextUpdate"
+              />
+            </div>
 
             <div class="mt-4 flex items-center justify-between relative z-10">
               <div class="flex items-center gap-2">
@@ -958,9 +986,10 @@ const handleExport = async (format: ExportFormat) => {
                 </span>
                 <!-- Clear input button -->
                 <button
-                  v-if="inputText"
+                  v-if="inputPlainText"
                   @click="
                     inputText = '';
+                    inputPlainText = '';
                     resultText = '';
                     clearInputStorage();
                   "
@@ -973,7 +1002,7 @@ const handleExport = async (format: ExportFormat) => {
               </div>
               <button
                 @click="handleSubmit"
-                :disabled="isLoading || !inputText"
+                :disabled="isLoading || !inputPlainText.trim()"
                 class="bg-cyan-400 hover:bg-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-500 text-white font-bold py-2.5 px-8 rounded-full shadow-lg transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
               >
                 <Loader2
@@ -1014,19 +1043,12 @@ const handleExport = async (format: ExportFormat) => {
             </div>
 
             <!-- Result text display -->
-            <div
-              v-else
-              class="flex-1 mt-6 overflow-y-auto prose prose-lg max-w-none text-gray-800 dark:text-gray-200 leading-relaxed custom-scrollbar result-text-content"
-              :dir="isRtlLanguage ? 'rtl' : 'ltr'"
-              :style="{
-                textAlign: isRtlLanguage ? 'right' : 'left',
-                direction: isRtlLanguage ? 'rtl' : 'ltr',
-              }"
-              :class="{
-                'font-cairo': targetLanguage === 'Arabic',
-              }"
-            >
-              {{ resultText }}
+            <div v-else class="flex-1 mt-6 overflow-y-auto custom-scrollbar">
+              <TiptapEditor
+                :model-value="resultText"
+                :editable="false"
+                :dir="isRtlLanguage ? 'rtl' : 'ltr'"
+              />
             </div>
 
             <div
