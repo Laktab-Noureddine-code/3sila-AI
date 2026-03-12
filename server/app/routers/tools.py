@@ -29,6 +29,7 @@ class TextRequest(BaseModel):
 
 class TranslationRequest(BaseModel):
     text: str
+    source_lang: Optional[str] = None
     target_lang: str = "French"
     source_type: str = "text"
     source_url: Optional[str] = None
@@ -103,7 +104,7 @@ async def translate_endpoint(
         )
 
     # 2. Call AI Service
-    translation = translate_text(data.text, data.target_lang)
+    translation = translate_text(data.text, data.target_lang, data.source_lang)
 
     # 3. Save History (Users only)
     if current_user:
