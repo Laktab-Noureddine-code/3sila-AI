@@ -7,7 +7,7 @@ from app.core.database import engine
 from app.models.system_config import SystemConfig
 from app.core.security_encryption import encryption_service
 
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:streamGenerateContent"
 MAX_CHUNK_SIZE = 20000
 RPM_SLEEP = 4  # Seconds to sleep between requests to respect 15 RPM limit
 
